@@ -95,7 +95,16 @@ public class ActiveViewComposite extends Composite implements IToolBarProvider {
 				this.setLayout(createLayout());
 				view.activate(this);
 				if (this.toolbarManager != null) {
-					this.toolbarManager.update(true);
+					if (this.toolbarManager.getSize() > 0) {
+						this.toolbarManager.update(true);
+						this.toolbarManager.getControl().setVisible(true);
+						this.toolbarManager.getControl().setLayoutData(
+								new GridData(SWT.FILL, SWT.FILL, true, false));
+					} else {
+						this.toolbarManager.getControl().setVisible(false);
+						this.toolbarManager.getControl().setLayoutData(
+								new GridData(0, 0));
+					}
 				}
 			} catch (RuntimeException e) {
 				Policy.getStatusHandler().show(
@@ -209,8 +218,6 @@ public class ActiveViewComposite extends Composite implements IToolBarProvider {
 				throw new RuntimeException(
 						"ToolBarManager didn't create a toolbar with this composite as the parent"); //$NON-NLS-1$
 			}
-			// Set the toolbar layout
-			control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			control.moveAbove(null);
 		}
 		return this.toolbarManager;
