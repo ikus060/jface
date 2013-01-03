@@ -20,11 +20,6 @@ import org.eclipse.swt.widgets.Shell;
 public abstract class MainWindow extends ApplicationWindow {
 
 	/**
-	 * Define the height in pixel of the tab folder.
-	 */
-	protected static final int TAB_FOLDER_HEIGHT = 32;
-
-	/**
 	 * The composite used to keep track of the active view.
 	 */
 	private ViewBook book;
@@ -134,7 +129,6 @@ public abstract class MainWindow extends ApplicationWindow {
 		// Sets the TabFolder style
 		CTabFolder tabFolder = this.book.getTabFolder();
 		tabFolder.setSimple(false);
-		tabFolder.setTabHeight(TAB_FOLDER_HEIGHT);
 		tabFolder.setUnselectedCloseVisible(false);
 		ColorUtil.adapt(tabFolder);
 
