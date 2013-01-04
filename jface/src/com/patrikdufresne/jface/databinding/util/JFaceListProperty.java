@@ -184,9 +184,9 @@ public class JFaceListProperty extends SimpleListProperty {
 			}
 			return Collections.EMPTY_LIST;
 		} catch (InvocationTargetException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.getMessage(), e);
 		} catch (IllegalAccessException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
 
@@ -198,15 +198,15 @@ public class JFaceListProperty extends SimpleListProperty {
 		try {
 			setterMethod.invoke(source, new Object[] { list });
 		} catch (IllegalAccessException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.getMessage(), e);
 		} catch (InvocationTargetException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public Object getElementType() {
-		return this.returnType;
+		return Object.class;
 	}
 
 }

@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.action.Action;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,5 +92,26 @@ public class JFacePropertiesTest {
 		IObservableList list = JFaceProperties.list(MockAction.class,
 				MockAction.COLLECTION, MockAction.COLLECTION).observe(action);
 
+	}
+
+	@Test
+	public void testList_withBinding() {
+
+		DataBindingContext dbc = new DataBindingContext();
+
+		// Bind the action property list to a model
+		MockAction action = new MockAction();
+
+		WritableList list = new WritableList(new ArrayList<String>(),
+				String.class);
+		dbc.bindList(
+				JFaceProperties.list(MockAction.class, MockAction.LIST,
+						MockAction.LIST).observe(action), list);
+
+		list.addAll(Arrays.asList("a", "b"));
+
+		assertEquals(2, action.getList().size());
+		assertTrue(action.getList().contains("a"));
+		assertTrue(action.getList().contains("b"));
 	}
 }
