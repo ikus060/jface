@@ -91,26 +91,29 @@ public class ActiveViewComposite extends Composite implements IToolBarProvider {
 		// Active the view part. Most likely, activating the view part will al
 		// so populate the cool bar.
 		if (view != null) {
+			this.setLayout(createLayout());
+			// Try to active the view
 			try {
-				this.setLayout(createLayout());
 				view.activate(this);
-				if (this.toolbarManager != null) {
-					if (this.toolbarManager.getSize() > 0) {
-						this.toolbarManager.update(true);
-						this.toolbarManager.getControl().setVisible(true);
-						this.toolbarManager.getControl().setLayoutData(
-								new GridData(SWT.FILL, SWT.FILL, true, false));
-					} else {
-						this.toolbarManager.getControl().setVisible(false);
-						this.toolbarManager.getControl().setLayoutData(
-								new GridData(0, 0));
-					}
-				}
 			} catch (RuntimeException e) {
 				Policy.getStatusHandler().show(
 						new Status(IStatus.ERROR, Policy.JFACE, e.getMessage(),
 								e), null);
 			}
+			// Layout the toolbar manager
+			if (this.toolbarManager != null) {
+				if (this.toolbarManager.getSize() > 0) {
+					this.toolbarManager.update(true);
+					this.toolbarManager.getControl().setVisible(true);
+					this.toolbarManager.getControl().setLayoutData(
+							new GridData(SWT.FILL, SWT.FILL, true, false));
+				} else {
+					this.toolbarManager.getControl().setVisible(false);
+					this.toolbarManager.getControl().setLayoutData(
+							new GridData(0, 0));
+				}
+			}
+			// Keep track of the active view
 			this.active = view;
 		}
 
