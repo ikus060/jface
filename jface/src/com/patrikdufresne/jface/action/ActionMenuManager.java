@@ -132,17 +132,12 @@ public class ActionMenuManager extends MenuManager {
 			return mnu;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.actions.ActionFactory.IWorkbenchAction#dispose()
-		 */
 		public void dispose() {
 			if (menu != null) {
 				menu.dispose();
 				menu = null;
 			}
-			ActionMenuManager.this.dispose();
+			//ActionMenuManager.this.dispose();
 		}
 
 		protected IAction getActionHandler() {
@@ -234,7 +229,7 @@ public class ActionMenuManager extends MenuManager {
 	/** the associated menu action */
 	protected final MenuCreatorAction action;
 
-	/** the delege action contribution item */
+	/** the delegate action contribution item */
 	private final ActionContributionItem actionContributionItem;
 
 	/** the associated menu action */
@@ -308,7 +303,9 @@ public class ActionMenuManager extends MenuManager {
 	 */
 	@Override
 	public void dispose() {
-		this.actionContributionItem.dispose();
+		if(this.actionContributionItem!=null){
+			this.actionContributionItem.dispose();
+		}
 		super.dispose();
 	}
 
