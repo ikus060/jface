@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
-
 /**
  * SafeRunnableDialog is a dialog that can show the results of multiple safe
  * runnable errors.
@@ -69,6 +68,7 @@ public class StatusHandlerDialog extends DetailMessageDialog {
 							dialog.create();
 							dialog.getShell().addDisposeListener(
 									new DisposeListener() {
+										@Override
 										public void widgetDisposed(
 												DisposeEvent e) {
 											dialog = null;
@@ -119,9 +119,9 @@ public class StatusHandlerDialog extends DetailMessageDialog {
 	 */
 	public StatusHandlerDialog(IStatus status) {
 
-		super(null, JFaceResources.getString("error"), null, EMPTY, EMPTY, //$NON-NLS-1$
-				EMPTY, ERROR, new String[] { IDialogConstants.OK_LABEL }, 0,
-				null, false);
+		super(null, JFaceResources.getString("error"), null, JFaceResources //$NON-NLS-1$
+				.getString("SafeRunnable.errorMessage"), EMPTY, EMPTY, ERROR, //$NON-NLS-1$
+				new String[] { IDialogConstants.OK_LABEL }, 0, null, false);
 
 		setShellStyle(SWT.DIALOG_TRIM | SWT.MODELESS | SWT.RESIZE | SWT.MIN
 				| SWT.MAX | getDefaultOrientation());
@@ -129,7 +129,6 @@ public class StatusHandlerDialog extends DetailMessageDialog {
 
 		this.statuses.add(status);
 		setStatus(status);
-		setMessage(JFaceResources.getString("SafeRunnable.errorMessage")); //$NON-NLS-1$
 	}
 
 	/**
@@ -167,18 +166,26 @@ public class StatusHandlerDialog extends DetailMessageDialog {
 	}
 
 	/**
-	 * This function is used to create a detailed message from a status object.
+	 * This function is used to create a message from a status object. This
+	 * implementation return the status message field and append the exception
+	 * message field if any.
 	 * 
 	 * @param status
+	 *            the status object
+	 * 
 	 * @return
 	 */
 	protected String createStatusMessage(IStatus status) {
-		String message = status.getMessage();
+		StringBuilder buf = new StringBuilder();
+		buf.append(status.getMessage());
+
 		Throwable t = status.getException();
-		if (t != null) {
-			message = t.getLocalizedMessage();
+		if (t != null && t.getLocalizedMessage() != null
+				&& !t.getLocalizedMessage().isEmpty()) {
+			buf.append("\r\n"); //$NON-NLS-1$
+			buf.append(t.getLocalizedMessage());
 		}
-		return message;
+		return buf.toString();
 	}
 
 	/**
