@@ -1,7 +1,10 @@
 package com.patrikdufresne.ui;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -28,8 +31,6 @@ public abstract class MainWindow extends ApplicationWindow {
 	 * The preference store of this windows.
 	 */
 	private IPreferenceStore prefStore;
-
-	private ProgressMonitorDialog progressDialog;
 
 	/**
 	 * Create a new main window.
@@ -218,17 +219,6 @@ public abstract class MainWindow extends ApplicationWindow {
 	}
 
 	/**
-	 * This implementation return a progress dialog as a runnable context.
-	 */
-	public IRunnableContext getRunnableContext() {
-		if (this.progressDialog == null) {
-			// Create the progress dialog (the runnable context)
-			this.progressDialog = new ProgressMonitorDialog(getShell());
-		}
-		return this.progressDialog;
-	}
-
-	/**
 	 * Returns a list of views available to be displayed.
 	 */
 	public IViewPart[] getViews() {
@@ -265,6 +255,24 @@ public abstract class MainWindow extends ApplicationWindow {
 	public <T> T locateService(Class<T> serviceClass) {
 		return null;
 	}
+	
+    /**
+     * This implementation of IRunnableContext#run(boolean, boolean,
+     * IRunnableWithProgress) blocks until the runnable has been run,
+     * regardless of the value of <code>fork</code>.
+     * It is recommended that <code>fork</code> is set to
+     * true in most cases. If <code>fork</code> is set to <code>false</code>,
+     * the runnable will run in the UI thread and it is the runnable's
+     * responsibility to call <code>Display.readAndDispatch()</code>
+     * to ensure UI responsiveness.
+     */
+    @Override
+	public void run(final boolean fork, boolean cancelable,
+            final IRunnableWithProgress runnable)
+            throws InvocationTargetException, InterruptedException {
+    	ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(getShell());
+    	progressDialog.run(fork, cancelable, runnable);
+    }
 
 	/**
 	 * Saves the bounds of the shell in the preference store. The bounds are
