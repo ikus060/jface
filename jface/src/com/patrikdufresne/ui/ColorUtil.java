@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013, Patrik Dufresne. All rights reserved.
+ * Patrik Dufresne PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
 package com.patrikdufresne.ui;
 
 import org.eclipse.jface.resource.JFaceResources;
@@ -23,9 +27,10 @@ public class ColorUtil {
 	private static final String ACTIVE_TAB_TEXT = "ColorUtil.ActiveTabText"; //$NON-NLS-1$
 
 	/**
-	 * This unction may be used to adapt the color of a CTabFolder.
+	 * This function may be used to adapt the color of a CTabFolder.
 	 * 
 	 * @param tabFolder
+	 *            The tabFolder widget to adapt.
 	 */
 	public static void adapt(CTabFolder tabFolder) {
 		// Use the color registry to store the font.
@@ -63,9 +68,8 @@ public class ColorUtil {
 	 *            percentage of the first color in the blend (0-100)
 	 * @return the RGB value of the blended color
 	 * 
-	 * @since 3.3
 	 */
-	private static RGB blend(RGB c1, RGB c2, int ratio) {
+	public static RGB blend(RGB c1, RGB c2, int ratio) {
 		int r = blend(c1.red, c2.red, ratio);
 		int g = blend(c1.green, c2.green, ratio);
 		int b = blend(c1.blue, c2.blue, ratio);
@@ -116,7 +120,6 @@ public class ColorUtil {
 	private static RGB getActiveTabStartColor() {
 		if (Display.getCurrent().getDepth() < 15)
 			return getActiveTabEndColor();
-
 		RGB white = new RGB(255, 255, 255);
 		Color c1 = Display.getCurrent()
 				.getSystemColor(SWT.COLOR_LIST_SELECTION);
