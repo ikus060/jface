@@ -17,12 +17,14 @@ import org.eclipse.core.databinding.observable.IDisposeListener;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.internal.databinding.BindingMessages;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.fieldassist.ControlDecorationUpdater;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.GC;
@@ -79,7 +81,9 @@ public class DateTimeSupport {
 				format.parse(input.toString());
 				return ValidationStatus.ok();
 			} catch (ParseException e) {
-				return ValidationStatus.error(e.getLocalizedMessage());
+				return ValidationStatus.error(String.format(
+						BindingMessages.getString("Validate_DateInvalid"), //$NON-NLS-1$
+						input.toString()));
 			}
 		}
 
