@@ -4,14 +4,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.databinding.observable.list.ListDiff;
+import org.eclipse.core.databinding.observable.set.SetDiff;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.INativePropertyListener;
 import org.eclipse.core.databinding.property.ISimplePropertyListener;
 import org.eclipse.core.databinding.property.NativePropertyListener;
-import org.eclipse.core.databinding.property.list.SimpleListProperty;
+import org.eclipse.core.databinding.property.set.SimpleSetProperty;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
@@ -23,7 +23,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
  * This class is an adaptation of the JFaceProperty to support
  * {@link IObservableList} instead of {@link IObservableValue}.
  */
-public class JFaceListProperty extends SimpleListProperty {
+public class JFaceSetProperty extends SimpleSetProperty {
 
 	/**
 	 * Private listener implementation.
@@ -40,7 +40,7 @@ public class JFaceListProperty extends SimpleListProperty {
 		 * @param listener
 		 */
 		public Listener(ISimplePropertyListener listener) {
-			super(JFaceListProperty.this, listener);
+			super(JFaceSetProperty.this, listener);
 		}
 
 		protected void doAddTo(Object model) {
@@ -65,7 +65,7 @@ public class JFaceListProperty extends SimpleListProperty {
 		 */
 		@Override
 		public void propertyChange(PropertyChangeEvent event) {
-			if (event.getProperty().equals(JFaceListProperty.this.property)) {
+			if (event.getProperty().equals(JFaceSetProperty.this.property)) {
 				fireChange(event.getSource(), null);
 			}
 		}
@@ -118,6 +118,8 @@ public class JFaceListProperty extends SimpleListProperty {
 	 */
 	private Method setterMethod;
 
+	private Class elementType;
+
 	/**
 	 * @param fieldName
 	 *            the field name i.e.: the function name without get/set
@@ -126,12 +128,19 @@ public class JFaceListProperty extends SimpleListProperty {
 	 *            the property key fired
 	 * @param cls
 	 *            the class
+	 * @param elementType
+	 *            the element type contain in the set or null
 	 * @throws IllegalArgumentException
 	 *             if the return type of the property is not a subclass of
 	 *             {@link List}
 	 */
-	public JFaceListProperty(String fieldName, String property, Class cls) {
+	public JFaceSetProperty(String fieldName, String property, Class cls,
+			Class elementType) {
+		if (fieldName == null || property == null || cls == null) {
+			throw new IllegalArgumentException();
+		}
 		this.property = property;
+		this.elementType = elementType;
 		// Create all the necessary method ahead of time to ensure they are
 		// available
 		try {
@@ -167,13 +176,13 @@ public class JFaceListProperty extends SimpleListProperty {
 	 * This implementation get the list object using java reflection.
 	 */
 	@Override
-	protected List doGetList(Object source) {
+	protected Set doGetSet(Object source) {
 		try {
 			Object obj = getterMethod.invoke(source, new Object[] {});
-			if (obj instanceof List) {
-				return (List) obj;
+			if (obj instanceof Set) {
+				return (Set) obj;
 			}
-			return Collections.EMPTY_LIST;
+			return Collections.EMPTY_SET;
 		} catch (InvocationTargetException e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		} catch (IllegalAccessException e) {
@@ -185,7 +194,7 @@ public class JFaceListProperty extends SimpleListProperty {
 	 * This implementation set the list value using java reflection.
 	 */
 	@Override
-	protected void doSetList(Object source, List list, ListDiff diff) {
+	protected void doSetSet(Object source, Set list, SetDiff diff) {
 		try {
 			setterMethod.invoke(source, new Object[] { list });
 		} catch (IllegalAccessException e) {
@@ -197,7 +206,7 @@ public class JFaceListProperty extends SimpleListProperty {
 
 	@Override
 	public Object getElementType() {
-		return Object.class;
+		return this.elementType != null ? this.elementType : Object.class;
 	}
 
 }

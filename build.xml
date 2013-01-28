@@ -32,7 +32,6 @@
 
 		<javac destdir="${bin.dir}" nowarn="yes" target="1.5" includeAntRuntime="no" debug="true" debuglevel="lines,vars,source">
 			<src path="${src.dir}"/>
-		    <src path="./databinding-property"/>
 			<classpath refid="libs.classpath" />
 		</javac>
 
@@ -44,7 +43,6 @@
 	<target name="package-src" depends="init">
 		<zip destfile="${target.dir}/${src.filename}">
 			<zipfileset dir="${src.dir}" prefix="src" />
-			<zipfileset dir="./databinding-property" prefix="src" />
 			<zipfileset file="${root.dir}/build.xml"/>
 			<zipfileset file="${root.dir}/version.properties" />
 		</zip>
