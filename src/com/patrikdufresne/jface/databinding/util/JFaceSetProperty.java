@@ -148,8 +148,8 @@ public class JFaceSetProperty extends SimpleSetProperty {
 			getterMethod = cls.getMethod(getterName, new Class[] {});
 			returnType = getterMethod.getReturnType();
 			// Make sure the return type os subclass of List
-			if (!List.class.isAssignableFrom(returnType)) {
-				throw new IllegalArgumentException("return type is not List");
+			if (!Set.class.isAssignableFrom(returnType)) {
+				throw new IllegalArgumentException("return type is not Set");
 			}
 			setterMethod = cls.getMethod(getSetterName(fieldName),
 					new Class[] { returnType });
@@ -160,9 +160,9 @@ public class JFaceSetProperty extends SimpleSetProperty {
 					.getMethod(
 							"removePropertyChangeListener", new Class[] { IPropertyChangeListener.class }); //$NON-NLS-1$
 		} catch (SecurityException e) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(e);
 		} catch (NoSuchMethodException e) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(e);
 		}
 	}
 

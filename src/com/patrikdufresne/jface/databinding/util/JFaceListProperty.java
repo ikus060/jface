@@ -151,9 +151,9 @@ public class JFaceListProperty extends SimpleListProperty {
 					.getMethod(
 							"removePropertyChangeListener", new Class[] { IPropertyChangeListener.class }); //$NON-NLS-1$
 		} catch (SecurityException e) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(e);
 		} catch (NoSuchMethodException e) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(e);
 		}
 	}
 
