@@ -7,11 +7,16 @@ import java.util.Comparator;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.observable.DisposeEvent;
+import org.eclipse.core.databinding.observable.IDisposeListener;
+import org.eclipse.core.databinding.observable.IObservableCollection;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableMapCellLabelProvider;
 import org.eclipse.jface.databinding.viewers.ObservableValueEditingSupport;
@@ -89,8 +94,10 @@ public class ColumnSupport {
 	 *            the viewer
 	 * @param columnLabel
 	 *            the column label
-	 * @param attributeMap
-	 *            the attribute map
+	 * @param knownElements
+	 *            known elements (commonly the same as the input)
+	 * @param property
+	 *            the value property used as label
 	 * @return a new instance of {@link ColumnSupport} for chaining.
 	 */
 	public static ColumnSupport create(TableViewer viewer, String columnLabel,
@@ -373,6 +380,13 @@ public class ColumnSupport {
 			naturalComparator = new Comparator() {
 				@Override
 				public int compare(Object o1, Object o2) {
+					if (o1 == null && o2 == null) {
+						return 0;
+					} else if (o1 == null) {
+						return -1;
+					} else if (o2 == null) {
+						return 1;
+					}
 					return ((Comparable) o1).compareTo(o2);
 				}
 			};
@@ -454,13 +468,62 @@ public class ColumnSupport {
 	public ColumnSupport addTextEditingSupport(final DataBindingContext dbc,
 			IValueProperty property, final UpdateValueStrategy targetToModel,
 			final UpdateValueStrategy modelToTarget) {
+		return addTextEditingSupport(dbc, SWT.NONE, property, targetToModel,
+				modelToTarget);
+	}
+
+	/**
+	 * Add text editing support to the column.
+	 * <p>
+	 * It's recommended to provide an update strategy for target to model to
+	 * persist the data. It should be created with
+	 * UpdateValueStrategy.POLICY_CONVERT.
+	 * <p>
+	 * It's recommended to provide a null strategy for model to target.
+	 * 
+	 * @param dbc
+	 *            the data binding context
+	 * @param style
+	 *            the text widget's style.
+	 * @param property
+	 *            the property to be edited or null to use default property. The
+	 *            property value should be a String.
+	 * @param targetToModel
+	 *            strategy to employ when the target is the source of the change
+	 *            and the model is the destination or null to use default
+	 * @param modelToTarget
+	 *            strategy to employ when the model is the source of the change
+	 *            and the target is the destination or null to use default.
+	 * @return same object for chaining
+	 */
+	public ColumnSupport addTextEditingSupport(final DataBindingContext dbc,
+			final int style, IValueProperty property,
+			final UpdateValueStrategy targetToModel,
+			final UpdateValueStrategy modelToTarget) {
 		final IValueProperty finalProperty = property != null ? property
 				: this.property;
 
 		this.column.setEditingSupport(new ObservableValueEditingSupport(
 				this.column.getViewer(), dbc) {
 
-			private TextCellEditor cellEditor;
+			TextCellEditor cellEditor;
+
+			ControlDecorationSupport decoration;
+
+			/**
+			 * Listen to target disposal to disepo the control decoration.
+			 */
+			private IDisposeListener targetDisposeListener = new IDisposeListener() {
+				@Override
+				public void handleDispose(DisposeEvent event) {
+					// The target is disposed, let dispose the
+					// decorator.
+					if (decoration != null) {
+						decoration.dispose();
+						decoration = null;
+					}
+				}
+			};
 
 			/**
 			 * This implementation create the binding using the update strategy
@@ -469,11 +532,25 @@ public class ColumnSupport {
 			@Override
 			protected Binding createBinding(IObservableValue target,
 					IObservableValue model) {
-				return dbc.bindValue(target, model,
+				// Create the binding with our update strategy
+				Binding binding = dbc.bindValue(target, model,
 						targetToModel != null ? targetToModel
 								: new UpdateValueStrategy(
 										UpdateValueStrategy.POLICY_CONVERT),
 						modelToTarget != null ? modelToTarget : null);
+
+				// Attach a dispose listener to dispose the control
+				// decoration too.
+				target.addDisposeListener(this.targetDisposeListener);
+
+				// While creating the binding, also create the
+				// decoration
+				if (this.decoration == null) {
+					this.decoration = ControlDecorationSupport.create(binding,
+							SWT.TOP | SWT.LEFT);
+				}
+
+				return binding;
 			}
 
 			/**
@@ -498,7 +575,7 @@ public class ColumnSupport {
 			@Override
 			protected CellEditor getCellEditor(Object element) {
 				if (this.cellEditor == null) {
-					this.cellEditor = new TextCellEditor(getComposite());
+					this.cellEditor = new TextCellEditor(getComposite(), style);
 				}
 				return this.cellEditor;
 			}

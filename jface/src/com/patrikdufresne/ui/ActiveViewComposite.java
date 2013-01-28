@@ -59,7 +59,12 @@ public class ActiveViewComposite extends Composite implements IToolBarProvider {
 	 */
 	public ActiveViewComposite(Composite parent, int style) {
 		super(parent, style);
-		setLayout(createLayout());
+		GridLayout layout = new GridLayout(1, true);
+		layout.horizontalSpacing = 0;
+		layout.verticalSpacing = 0;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		setLayout(layout);
 		addListener(SWT.Dispose, this.listener);
 	}
 
@@ -91,10 +96,12 @@ public class ActiveViewComposite extends Composite implements IToolBarProvider {
 		// Active the view part. Most likely, activating the view part will al
 		// so populate the cool bar.
 		if (view != null) {
-			this.setLayout(createLayout());
+			Composite comp = new Composite(this, SWT.NONE);
+			comp.setLayout(createLayout());
+			comp.setLayoutData(new GridData(GridData.FILL_BOTH));
 			// Try to active the view
 			try {
-				view.activate(this);
+				view.activate(comp);
 			} catch (RuntimeException e) {
 				Policy.getStatusHandler().show(
 						new Status(IStatus.ERROR, Policy.JFACE, e.getMessage(),
