@@ -9,8 +9,6 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.DisposeEvent;
 import org.eclipse.core.databinding.observable.IDisposeListener;
-import org.eclipse.core.databinding.observable.IObservableCollection;
-import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
@@ -27,6 +25,8 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerColumn;
@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.patrikdufresne.jface.viewers.AbstractColumnSorter;
 import com.patrikdufresne.jface.viewers.TableViewerUpdater;
+import com.patrikdufresne.jface.viewers.TreeViewerUpdater;
 import com.patrikdufresne.jface.viewers.ViewerColumnUpdater;
 
 /**
@@ -104,6 +105,12 @@ public class ColumnSupport {
 			IObservableSet knownElements, IValueProperty property) {
 		return new ColumnSupport(new TableViewerColumn(viewer, SWT.NONE),
 				new TableViewerUpdater(), columnLabel, knownElements, property);
+	}
+
+	public static ColumnSupport create(TreeViewer viewer, String columnLabel,
+			IObservableSet knownElements, IValueProperty property) {
+		return new ColumnSupport(new TreeViewerColumn(viewer, SWT.NONE),
+				new TreeViewerUpdater(), columnLabel, knownElements, property);
 	}
 
 	static Viewer getViewer(CellEditor cellEditor) {

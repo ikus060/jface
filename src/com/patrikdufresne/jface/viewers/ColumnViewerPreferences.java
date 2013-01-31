@@ -4,11 +4,11 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-
 
 /**
  * This class is used to store status of a ColumnViewer.
@@ -37,9 +37,37 @@ public class ColumnViewerPreferences {
 	 */
 	private static final String PREF_SORT_DIRECTION = ".direction"; //$NON-NLS-1$
 
+	/**
+	 * Create a new column preferences.
+	 * 
+	 * @param viewer
+	 *            the table viewer
+	 * @param store
+	 *            the preference store
+	 * @param key
+	 *            the preference key
+	 * @return
+	 */
 	public static ColumnViewerPreferences create(TableViewer viewer,
 			IPreferenceStore store, String key) {
 		return new ColumnViewerPreferences(viewer, new TableViewerUpdater(),
+				store, key);
+	}
+
+	/**
+	 * Create a new column preferences.
+	 * 
+	 * @param viewer
+	 *            the tree viewer
+	 * @param store
+	 *            the preference store
+	 * @param key
+	 *            the preference key
+	 * @return
+	 */
+	public static ColumnViewerPreferences create(TreeViewer viewer,
+			IPreferenceStore store, String key) {
+		return new ColumnViewerPreferences(viewer, new TreeViewerUpdater(),
 				store, key);
 	}
 
