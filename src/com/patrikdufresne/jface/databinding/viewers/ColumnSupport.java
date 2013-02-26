@@ -88,6 +88,11 @@ public class ColumnSupport {
 	private static final String EMPTY = ""; //$NON-NLS-1$
 
 	/**
+	 * The singleton natural comparator.
+	 */
+	private static Comparator naturalComparator;
+
+	/**
 	 * Create a new columns for the given viewer. The column content will be map
 	 * using the given attributeMap.
 	 * 
@@ -96,20 +101,78 @@ public class ColumnSupport {
 	 * @param columnLabel
 	 *            the column label
 	 * @param knownElements
-	 *            known elements (commonly the same as the input)
+	 *            known elements (should be the content provider known elements)
 	 * @param property
 	 *            the value property used as label
 	 * @return a new instance of {@link ColumnSupport} for chaining.
 	 */
 	public static ColumnSupport create(TableViewer viewer, String columnLabel,
 			IObservableSet knownElements, IValueProperty property) {
-		return new ColumnSupport(new TableViewerColumn(viewer, SWT.NONE),
+		return create(viewer, SWT.NONE, columnLabel, knownElements, property);
+	}
+
+	/**
+	 * Create a new columns for the given table viewer. The column content will
+	 * be map using the given value property.
+	 * 
+	 * @param viewer
+	 *            the table viewer
+	 * @param style
+	 *            the column style SWT.NONE, SWT.LEFT, SWT.RIGHT or SWT.CENTER
+	 * @param columnLabel
+	 *            the column label
+	 * @param knownElements
+	 *            known elements (should be the content provider known elements)
+	 * @param property
+	 *            the value property used as label
+	 * @return a new instance of {@link ColumnSupport} for chaining.
+	 */
+	public static ColumnSupport create(TableViewer viewer, int style,
+			String columnLabel, IObservableSet knownElements,
+			IValueProperty property) {
+		return new ColumnSupport(new TableViewerColumn(viewer, style),
 				new TableViewerUpdater(), columnLabel, knownElements, property);
 	}
 
+	/**
+	 * Create a new columns for the given tree viewer. The column content will
+	 * be map using the given value property.
+	 * 
+	 * @param viewer
+	 *            the tree viewer
+	 * @param columnLabel
+	 *            the column label
+	 * @param knownElements
+	 *            known elements (should be the content provider known elements)
+	 * @param property
+	 *            the value property used as label
+	 * @return a new instance of {@link ColumnSupport} for chaining.
+	 */
 	public static ColumnSupport create(TreeViewer viewer, String columnLabel,
 			IObservableSet knownElements, IValueProperty property) {
-		return new ColumnSupport(new TreeViewerColumn(viewer, SWT.NONE),
+		return create(viewer, SWT.NONE, columnLabel, knownElements, property);
+	}
+
+	/**
+	 * Create a new columns for the given tree viewer. The column content will
+	 * be map using the given value property.
+	 * 
+	 * @param viewer
+	 *            the tree viewer
+	 * @param style
+	 *            the column style SWT.NONE, SWT.LEFT, SWT.RIGHT or SWT.CENTER
+	 * @param columnLabel
+	 *            the column label
+	 * @param knownElements
+	 *            known elements (should be the content provider known elements)
+	 * @param property
+	 *            the value property used as label
+	 * @return a new instance of {@link ColumnSupport} for chaining.
+	 */
+	public static ColumnSupport create(TreeViewer viewer, int style,
+			String columnLabel, IObservableSet knownElements,
+			IValueProperty property) {
+		return new ColumnSupport(new TreeViewerColumn(viewer, style),
 				new TreeViewerUpdater(), columnLabel, knownElements, property);
 	}
 
@@ -179,6 +242,30 @@ public class ColumnSupport {
 			}
 		}
 		return method;
+	}
+
+	/**
+	 * Return a natural comparator.
+	 * 
+	 * @return
+	 */
+	public static Comparator naturalComparator() {
+		if (naturalComparator == null) {
+			naturalComparator = new Comparator() {
+				@Override
+				public int compare(Object o1, Object o2) {
+					if (o1 == null && o2 == null) {
+						return 0;
+					} else if (o1 == null) {
+						return -1;
+					} else if (o2 == null) {
+						return 1;
+					}
+					return ((Comparable) o1).compareTo(o2);
+				}
+			};
+		}
+		return naturalComparator;
 	}
 
 	/**
@@ -381,35 +468,6 @@ public class ColumnSupport {
 	}
 
 	/**
-	 * The singleton natural comparator.
-	 */
-	private static Comparator naturalComparator;
-
-	/**
-	 * Return a natural comparator.
-	 * 
-	 * @return
-	 */
-	public static Comparator naturalComparator() {
-		if (naturalComparator == null) {
-			naturalComparator = new Comparator() {
-				@Override
-				public int compare(Object o1, Object o2) {
-					if (o1 == null && o2 == null) {
-						return 0;
-					} else if (o1 == null) {
-						return -1;
-					} else if (o2 == null) {
-						return 1;
-					}
-					return ((Comparable) o1).compareTo(o2);
-				}
-			};
-		}
-		return naturalComparator;
-	}
-
-	/**
 	 * Add text editing support to the column using the default property and
 	 * default update strategy. Same as calling the function
 	 * <code>addTextEditingSupport(dbc, null, null,null)</code>.
@@ -420,71 +478,6 @@ public class ColumnSupport {
 	 */
 	public ColumnSupport addTextEditingSupport(DataBindingContext dbc) {
 		return addTextEditingSupport(dbc, null, null, null);
-	}
-
-	/**
-	 * Add text editing support to the column using the property specified and
-	 * default update strategies. Same as calling the function
-	 * <code>addTextEditingSupport(dbc, property, null,null)</code>.
-	 * 
-	 * @param dbc
-	 *            the data binding context.
-	 * @param property
-	 *            the property or null to use the internal property value
-	 * @return same object for chaining
-	 */
-	public ColumnSupport addTextEditingSupport(DataBindingContext dbc,
-			IValueProperty property) {
-		return addTextEditingSupport(dbc, property, null, null);
-	}
-
-	/**
-	 * Add editing support to the column. Same as calling the function
-	 * <code>addTextEditingSupport(dbc, null, targetToModel, modelToTarget)</code>
-	 * .
-	 * 
-	 * @param dbc
-	 *            the data binding context to be used during the editing.
-	 * @param targetToModel
-	 *            strategy to employ when the target is the source of the change
-	 *            and the model is the destination or null to use default
-	 * @param modelToTarget
-	 *            strategy to employ when the model is the source of the change
-	 *            and the target is the destination or null to use default.
-	 * @return same object for chaining
-	 */
-	public ColumnSupport addTextEditingSupport(DataBindingContext dbc,
-			UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
-		return addTextEditingSupport(dbc, null, targetToModel, modelToTarget);
-	}
-
-	/**
-	 * Add text editing support to the column.
-	 * <p>
-	 * It's recommended to provide an update strategy for target to model to
-	 * persist the data. It should be created with
-	 * UpdateValueStrategy.POLICY_CONVERT.
-	 * <p>
-	 * It's recommended to provide a null strategy for model to target.
-	 * 
-	 * @param dbc
-	 *            the data binding context
-	 * @param property
-	 *            the property to be edited or null to use default property. The
-	 *            property value should be a String.
-	 * @param targetToModel
-	 *            strategy to employ when the target is the source of the change
-	 *            and the model is the destination or null to use default
-	 * @param modelToTarget
-	 *            strategy to employ when the model is the source of the change
-	 *            and the target is the destination or null to use default.
-	 * @return same object for chaining
-	 */
-	public ColumnSupport addTextEditingSupport(final DataBindingContext dbc,
-			IValueProperty property, final UpdateValueStrategy targetToModel,
-			final UpdateValueStrategy modelToTarget) {
-		return addTextEditingSupport(dbc, SWT.NONE, property, targetToModel,
-				modelToTarget);
 	}
 
 	/**
@@ -598,6 +591,71 @@ public class ColumnSupport {
 		});
 		return this;
 
+	}
+
+	/**
+	 * Add text editing support to the column using the property specified and
+	 * default update strategies. Same as calling the function
+	 * <code>addTextEditingSupport(dbc, property, null,null)</code>.
+	 * 
+	 * @param dbc
+	 *            the data binding context.
+	 * @param property
+	 *            the property or null to use the internal property value
+	 * @return same object for chaining
+	 */
+	public ColumnSupport addTextEditingSupport(DataBindingContext dbc,
+			IValueProperty property) {
+		return addTextEditingSupport(dbc, property, null, null);
+	}
+
+	/**
+	 * Add text editing support to the column.
+	 * <p>
+	 * It's recommended to provide an update strategy for target to model to
+	 * persist the data. It should be created with
+	 * UpdateValueStrategy.POLICY_CONVERT.
+	 * <p>
+	 * It's recommended to provide a null strategy for model to target.
+	 * 
+	 * @param dbc
+	 *            the data binding context
+	 * @param property
+	 *            the property to be edited or null to use default property. The
+	 *            property value should be a String.
+	 * @param targetToModel
+	 *            strategy to employ when the target is the source of the change
+	 *            and the model is the destination or null to use default
+	 * @param modelToTarget
+	 *            strategy to employ when the model is the source of the change
+	 *            and the target is the destination or null to use default.
+	 * @return same object for chaining
+	 */
+	public ColumnSupport addTextEditingSupport(final DataBindingContext dbc,
+			IValueProperty property, final UpdateValueStrategy targetToModel,
+			final UpdateValueStrategy modelToTarget) {
+		return addTextEditingSupport(dbc, SWT.NONE, property, targetToModel,
+				modelToTarget);
+	}
+
+	/**
+	 * Add editing support to the column. Same as calling the function
+	 * <code>addTextEditingSupport(dbc, null, targetToModel, modelToTarget)</code>
+	 * .
+	 * 
+	 * @param dbc
+	 *            the data binding context to be used during the editing.
+	 * @param targetToModel
+	 *            strategy to employ when the target is the source of the change
+	 *            and the model is the destination or null to use default
+	 * @param modelToTarget
+	 *            strategy to employ when the model is the source of the change
+	 *            and the target is the destination or null to use default.
+	 * @return same object for chaining
+	 */
+	public ColumnSupport addTextEditingSupport(DataBindingContext dbc,
+			UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+		return addTextEditingSupport(dbc, null, targetToModel, modelToTarget);
 	}
 
 	/**
