@@ -113,7 +113,15 @@ public class ColumnSupport {
 				new TreeViewerUpdater(), columnLabel, knownElements, property);
 	}
 
-	static Viewer getViewer(CellEditor cellEditor) {
+	/**
+	 * Using reflection, this function return the viewer associated with the
+	 * given cell editor by calling the function <code>getViewer()</code>.
+	 * 
+	 * @param cellEditor
+	 *            the cell editor
+	 * @return the associated viewer or null
+	 */
+	public static Viewer getViewer(CellEditor cellEditor) {
 		Method method = internalFindMethod(cellEditor.getClass(), "getViewer", //$NON-NLS-1$
 				0, null);
 		try {
