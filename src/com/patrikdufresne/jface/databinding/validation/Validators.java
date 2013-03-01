@@ -2,7 +2,6 @@ package com.patrikdufresne.jface.databinding.validation;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Locale;
@@ -17,6 +16,56 @@ import com.patrikdufresne.jface.databinding.conversion.Converters;
 public class Validators {
 
 	/**
+	 * Return a validator to check the format of a string previous to a
+	 * conversion of a percent string using default locale.
+	 * 
+	 * @return the validator
+	 */
+	public static IValidator currency() {
+		return currency(Locale.getDefault());
+	}
+
+	/**
+	 * Return a validator to check the format of a string previous to a
+	 * conversion of a percent string using the given locale.
+	 * 
+	 * @return the validator
+	 */
+	public static IValidator currency(Locale locale) {
+
+		final NumberFormat currencyFormat = NumberFormat
+				.getCurrencyInstance(locale);
+
+		final NumberFormat format = NumberFormat.getNumberInstance(locale);
+
+		return new IValidator() {
+
+			@Override
+			public IStatus validate(Object value) {
+				if (value == null) {
+					return ValidationStatus.ok();
+				}
+				String input = value.toString();
+				// Try to parse the string using the percent format
+				ParsePosition pos = new ParsePosition(0);
+				currencyFormat.parse(input, pos);
+				if (pos.getIndex() >= input.length()) {
+					return ValidationStatus.ok();
+				}
+				// Try to parse the string using a number format
+				pos = new ParsePosition(0);
+				format.parse(input, pos);
+				if (pos.getIndex() >= input.length()) {
+					return ValidationStatus.ok();
+				}
+				return ValidationStatus
+						.error(getExampleErrorMessage(currencyFormat
+								.format(0.123456f)));
+			}
+		};
+	}
+
+	/**
 	 * Create an examples string using the format.
 	 * 
 	 * @return
@@ -27,32 +76,6 @@ public class Validators {
 		buf.append(" "); //$NON-NLS-1$
 		buf.append(example);
 		return buf.toString();
-	}
-
-	/**
-	 * Create a new validator to parse date from a string. This should be use in
-	 * conjunction with stringToDateConverter.
-	 * 
-	 * @param format
-	 *            the date format.
-	 * @return the validator
-	 */
-	public static IValidator stringToDateValidator(final DateFormat format) {
-		return new IValidator() {
-
-			@Override
-			public IStatus validate(Object value) {
-				String input = value.toString().trim();
-				ParsePosition pos = new ParsePosition(0);
-				Date result = format.parse(input, pos);
-				if (pos.getIndex() >= input.length()) {
-					return ValidationStatus.ok();
-				}
-				return ValidationStatus.error(getExampleErrorMessage(format
-						.format(new Date())));
-			}
-
-		};
 	}
 
 	/**
@@ -132,6 +155,32 @@ public class Validators {
 						.error(getExampleErrorMessage(percentFormat
 								.format(0.123456f)));
 			}
+		};
+	}
+
+	/**
+	 * Create a new validator to parse date from a string. This should be use in
+	 * conjunction with stringToDateConverter.
+	 * 
+	 * @param format
+	 *            the date format.
+	 * @return the validator
+	 */
+	public static IValidator stringToDateValidator(final DateFormat format) {
+		return new IValidator() {
+
+			@Override
+			public IStatus validate(Object value) {
+				String input = value.toString().trim();
+				ParsePosition pos = new ParsePosition(0);
+				Date result = format.parse(input, pos);
+				if (pos.getIndex() >= input.length()) {
+					return ValidationStatus.ok();
+				}
+				return ValidationStatus.error(getExampleErrorMessage(format
+						.format(new Date())));
+			}
+
 		};
 	}
 }

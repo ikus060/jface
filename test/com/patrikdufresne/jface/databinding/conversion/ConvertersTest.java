@@ -38,4 +38,33 @@ public class ConvertersTest {
 
 	}
 
+	@Test
+	public void testFloatToCurrency() {
+
+		IConverter converter = Converters.floatToCurrency(true,
+				Locale.CANADA_FRENCH);
+
+		assertEquals("12,05 $", converter.convert(Float.valueOf(12.05f))); //$NON-NLS-1$
+
+		assertEquals("13,06 $", converter.convert(Float.valueOf(13.055f))); //$NON-NLS-1$
+
+		assertEquals("18,05 $", converter.convert(Float.valueOf(18.0512345f))); //$NON-NLS-1$
+
+	}
+
+	@Test
+	public void testCurrencyToFloat() {
+		IConverter converter = Converters.currencyToFloat(true,
+				Locale.CANADA_FRENCH);
+
+		assertEquals(Float.valueOf(5f), converter.convert("5 $")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(5.5f), converter.convert("5,5 $")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(5f), converter.convert("5")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(5.5f), converter.convert("5,5")); //$NON-NLS-1$
+
+	}
+
 }

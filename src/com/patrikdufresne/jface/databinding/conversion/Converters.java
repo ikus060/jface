@@ -302,4 +302,88 @@ public class Converters {
 		};
 	}
 
+	/**
+	 * Convert a float into a formated currency string using the default locale.
+	 * 
+	 * @param primitive
+	 *            True to converter into primitive type.
+	 * @return the converter
+	 */
+	public static IConverter floatToCurrency(boolean primitive) {
+		return floatToCurrency(primitive, Locale.getDefault());
+	}
+
+	/**
+	 * Convert a float into a formated currency string using the specfiied
+	 * locale.
+	 * 
+	 * @param primitive
+	 *            True to converter into primitive type.
+	 * @param locale
+	 *            the specified locale
+	 * @return the converter
+	 */
+	public static IConverter floatToCurrency(boolean primitive, Locale locale) {
+		final NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+
+		return new Converter(primitive ? Float.TYPE : Float.class, String.class) {
+
+			@Override
+			public Object convert(Object fromObject) {
+				if (!(fromObject instanceof Float)) {
+					return ""; //$NON-NLS-1$
+				}
+				return format.format(fromObject);
+			}
+		};
+	}
+
+	/**
+	 * Return a converter to transform a formated currency string into a float
+	 * using default locale.
+	 * 
+	 * @return the converter
+	 */
+	public static IConverter currencyToFloat(boolean primitive) {
+		return currencyToFloat(primitive, Locale.getDefault());
+	}
+
+	/**
+	 * Return a converter to transform a formated string into a float using
+	 * specified locale.
+	 * 
+	 * @param primitive
+	 *            True to converter into primitive type.
+	 * @param locale
+	 *            the specified locale
+	 * @return the converter
+	 */
+	public static IConverter currencyToFloat(boolean primitive, Locale locale) {
+
+		final NumberFormat percentFormat = NumberFormat.getCurrencyInstance();
+
+		final NumberFormat format = NumberFormat.getNumberInstance(locale);
+
+		return new Converter(String.class, primitive ? Float.TYPE : Float.class) {
+
+			@Override
+			public Object convert(Object fromObject) {
+				if (fromObject == null) {
+					return null;
+				}
+				try {
+					return Float.valueOf(percentFormat.parse(
+							fromObject.toString()).floatValue());
+				} catch (ParseException e) {
+					try {
+						return Float.valueOf(format
+								.parse(fromObject.toString()).floatValue());
+					} catch (ParseException e2) {
+						return Float.valueOf(0f);
+					}
+				}
+			}
+		};
+	}
+
 }

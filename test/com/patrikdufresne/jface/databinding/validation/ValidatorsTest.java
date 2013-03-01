@@ -21,8 +21,29 @@ public class ValidatorsTest {
 		assertTrue(validator.validate("5").isOK());
 
 		assertTrue(validator.validate("5,5").isOK());
-		
+
 		assertFalse(validator.validate("5 a").isOK());
+
+		assertTrue(validator.validate(null).isOK());
+
+	}
+
+	@Test
+	public void testCurrency() {
+
+		IValidator validator = Validators.currency(Locale.CANADA_FRENCH);
+
+		assertTrue(validator.validate("5 $").isOK());
+
+		assertTrue(validator.validate("5,5 $").isOK());
+
+		assertTrue(validator.validate("5").isOK());
+
+		assertTrue(validator.validate("5,5").isOK());
+
+		assertFalse(validator.validate("5 a").isOK());
+
+		assertTrue(validator.validate(null).isOK());
 
 	}
 
