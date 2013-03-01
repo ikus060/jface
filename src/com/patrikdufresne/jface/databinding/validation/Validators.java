@@ -15,6 +15,8 @@ import com.patrikdufresne.jface.databinding.conversion.Converters;
 
 public class Validators {
 
+	protected static final String VALIDATE_NOT_NULL = "Validate_NotNull"; //$NON-NLS-1$
+
 	/**
 	 * Return a validator to check the format of a string previous to a
 	 * conversion of a percent string using default locale.
@@ -87,6 +89,25 @@ public class Validators {
 	 */
 	public static IValidator percent() {
 		return percent(0, 0);
+	}
+
+	/**
+	 * Return a validator checking if the value is null. When null this
+	 * validator return an error.
+	 * 
+	 * @return the validator.
+	 */
+	public static IValidator notNull() {
+		return new IValidator() {
+			@Override
+			public IStatus validate(Object value) {
+				if (value == null) {
+					return ValidationStatus.error(BindingMessages
+							.getString(VALIDATE_NOT_NULL));
+				}
+				return ValidationStatus.ok();
+			}
+		};
 	}
 
 	/**
