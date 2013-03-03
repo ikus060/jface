@@ -304,13 +304,25 @@ public class ViewBook extends Composite {
 	 * @return True if the view was contained in the list
 	 */
 	public boolean removeView(IViewPart view) {
+		return removeView(view.getId());
+	}
+
+	/**
+	 * Remove a single instance of a view defined by the specified
+	 * <code>id</code>.
+	 * 
+	 * @param id
+	 *            the view id
+	 * @return True if the view was contained in the list
+	 */
+	public boolean removeView(String id) {
 		// Search the view in the list
-		int index = indexOf(view.getId());
+		int index = indexOf(id);
 		if (index == -1) {
 			return false;
 		}
 		// If the view is currently active, deactivate it
-		if (this.comp.getActive() == view) {
+		if (this.comp.getActive() == getView(index)) {
 			this.comp.activateView(null);
 		}
 

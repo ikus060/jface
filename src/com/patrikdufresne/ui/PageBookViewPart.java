@@ -29,8 +29,7 @@ public abstract class PageBookViewPart extends ViewPart {
 	public void activate(Composite parent) {
 
 		// Create the tabFolder
-		this.book = new ViewBook(parent, SWT.BOTTOM | SWT.FLAT);
-		this.book.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		this.book = createViewBook(parent, SWT.BOTTOM | SWT.FLAT);
 
 		// Add view to the book.
 		addViews();
@@ -50,6 +49,17 @@ public abstract class PageBookViewPart extends ViewPart {
 	 */
 	protected void addViews() {
 		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * Create the view book control.
+	 * 
+	 * @return
+	 */
+	protected ViewBook createViewBook(Composite parent, int style) {
+		ViewBook book = new ViewBook(parent, style);
+		book.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		return book;
 	}
 
 	public IViewPart getActive() {
@@ -77,6 +87,14 @@ public abstract class PageBookViewPart extends ViewPart {
 		if (part.getSite() != site) {
 			throw new RuntimeException("site not properly set"); //$NON-NLS-1$
 		}
+	}
+
+	protected void removeView(IViewPart part) {
+		getBook().removeView(part);
+	}
+
+	protected void removeView(String id) {
+		getBook().removeView(id);
 	}
 
 }
