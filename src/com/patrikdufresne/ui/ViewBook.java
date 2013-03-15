@@ -4,6 +4,8 @@
  */
 package com.patrikdufresne.ui;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -11,6 +13,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+
+import com.patrikdufresne.jface.databinding.util.JFaceProperties;
 
 /**
  * A view book is a special widget used to hold a list of view availables to be
@@ -43,6 +47,33 @@ public class ViewBook extends Composite {
 		@Override
 		public void handleEvent(Event event) {
 			handleTabItemSelection(event);
+		}
+	};
+
+	/**
+	 * Listen to view events.
+	 */
+	private IPropertyChangeListener changeListener = new IPropertyChangeListener() {
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			// Check if the soruce is view.
+			if (!(event.getSource() instanceof ViewPart)) {
+				return;
+			}
+			ViewPart view = (ViewPart) event.getSource();
+			// Get the reference to the view and the tab.
+			int i = indexOf(view.getId());
+			if (i == -1) {
+				return;
+			}
+			CTabItem item = tabFolder.getItem(i);
+			if (ViewPart.TITLE.equals(event.getProperty())) {
+				item.setText(view.getTitle());
+			} else if (ViewPart.TITLE_IMAGE.equals(event.getProperty())) {
+				item.setImage(view.getTitleImage());
+			} else if (ViewPart.TITLE_TOOLTIP.equals(event.getProperty())) {
+				item.setToolTipText(view.getTitleToolTip());
+			}
 		}
 	};
 
@@ -137,6 +168,10 @@ public class ViewBook extends Composite {
 		// Create a Tab-item
 		CTabItem item = createTabItem(this.tabFolder, view, index);
 		item.setControl(this.comp);
+		// Attach listener
+		if (view instanceof ViewPart) {
+			((ViewPart) view).addPropertyChangeListener(this.changeListener);
+		}
 
 		// Select the item if it'S the first.
 		if (this.tabFolder.getItemCount() == 1) {
@@ -322,8 +357,13 @@ public class ViewBook extends Composite {
 			return false;
 		}
 		// If the view is currently active, deactivate it
-		if (this.comp.getActive() == getView(index)) {
+		IViewPart view = getView(index);
+		if (this.comp.getActive() == view) {
 			this.comp.activateView(null);
+		}
+		// Detach listener
+		if (view instanceof ViewPart) {
+			((ViewPart) view).addPropertyChangeListener(this.changeListener);
 		}
 
 		// Remove the item from the list
