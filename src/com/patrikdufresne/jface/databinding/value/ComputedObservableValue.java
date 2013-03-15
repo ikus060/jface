@@ -168,6 +168,8 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 
 			cachedValue = calculate();
 
+			dirty = false;
+			
 			startListening();
 
 			// This line will do the following:
@@ -191,7 +193,6 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 
 			// dependencies = newDependencies;
 
-			dirty = false;
 		}
 
 		return cachedValue;
