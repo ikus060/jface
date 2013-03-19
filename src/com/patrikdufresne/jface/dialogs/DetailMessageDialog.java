@@ -4,6 +4,9 @@
  */
 package com.patrikdufresne.jface.dialogs;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IconAndMessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -38,6 +41,28 @@ import org.eclipse.swt.widgets.Text;
 public class DetailMessageDialog extends MessageDialogWithToggle {
 
 	/**
+	 * Convenience method to open a standard error dialog without long detail
+	 * message.
+	 * 
+	 * @param parent
+	 *            the parent shell of the dialog, or <code>null</code> if none
+	 * @param title
+	 *            the dialog's title, or <code>null</code> if none
+	 * @param message
+	 *            a general message
+	 * @param shortDetail
+	 *            a show details message to give more precision about the error
+	 * @return the dialog, after being closed by the user, which the client can
+	 *         only call <code>getReturnCode()</code> or
+	 *         <code>getToggleState()</code>
+	 */
+	public static MessageDialogWithToggle openDetailError(Shell parent,
+			String title, String message, String shortDetail) {
+		return openDetailError(parent, title, message, shortDetail,
+				(String) null);
+	}
+
+	/**
 	 * Convenience method to open a standard error dialog.
 	 * 
 	 * @param parent
@@ -46,18 +71,10 @@ public class DetailMessageDialog extends MessageDialogWithToggle {
 	 *            the dialog's title, or <code>null</code> if none
 	 * @param message
 	 *            the message
-	 * @param toggleMessage
-	 *            the message for the toggle control, or <code>null</code> for
-	 *            the default message
-	 * @param toggleState
-	 *            the initial state for the toggle
-	 * @param store
-	 *            the IPreference store in which the user's preference should be
-	 *            persisted; <code>null</code> if you don't want it persisted
-	 *            automatically.
-	 * @param key
-	 *            the key to use when persisting the user's preference;
-	 *            <code>null</code> if you don't want it persisted.
+	 * @param shortDetail
+	 *            a show details message to give more precision about the error
+	 * @param longDetail
+	 *            a long description of the error.
 	 * @return the dialog, after being closed by the user, which the client can
 	 *         only call <code>getReturnCode()</code> or
 	 *         <code>getToggleState()</code>
@@ -90,7 +107,37 @@ public class DetailMessageDialog extends MessageDialogWithToggle {
 	 * @param title
 	 *            the dialog's title, or <code>null</code> if none
 	 * @param message
+	 *            a general message
+	 * @param shortDetail
+	 *            a show details message to give more precision about the error
+	 * @param longDetail
+	 *            the exception to show
+	 * @return the dialog, after being closed by the user, which the client can
+	 *         only call <code>getReturnCode()</code> or
+	 *         <code>getToggleState()</code>
+	 */
+	public static MessageDialogWithToggle openDetailError(Shell parent,
+			String title, String message, String shortDetail,
+			Throwable longDetail) {
+		StringWriter sw = new StringWriter();
+		longDetail.printStackTrace(new PrintWriter(sw));
+		return openDetailError(parent, title, message, shortDetail,
+				sw.toString());
+	}
+
+	/**
+	 * Convenience method to open a standard error dialog.
+	 * 
+	 * @param parent
+	 *            the parent shell of the dialog, or <code>null</code> if none
+	 * @param title
+	 *            the dialog's title, or <code>null</code> if none
+	 * @param message
 	 *            the message
+	 * @param shortDetail
+	 *            a show details message to give more precision about the error
+	 * @param longDetail
+	 *            a long description of the error.
 	 * @param toggleMessage
 	 *            the message for the toggle control, or <code>null</code> for
 	 *            the default message
@@ -132,24 +179,37 @@ public class DetailMessageDialog extends MessageDialogWithToggle {
 	 *            the dialog's title, or <code>null</code> if none
 	 * @param message
 	 *            the message
-	 * @param toggleMessage
-	 *            the message for the toggle control, or <code>null</code> for
-	 *            the default message
-	 * @param toggleState
-	 *            the initial state for the toggle
-	 * @param store
-	 *            the IPreference store in which the user's preference should be
-	 *            persisted; <code>null</code> if you don't want it persisted
-	 *            automatically.
-	 * @param key
-	 *            the key to use when persisting the user's preference;
-	 *            <code>null</code> if you don't want it persisted.
-	 * 
+	 * @param shortDetail
+	 *            a show details message to give more precision about the error
 	 * @return the dialog, after being closed by the user, which the client can
 	 *         only call <code>getReturnCode()</code> or
 	 *         <code>getToggleState()</code>
 	 */
-	public static MessageDialogWithToggle openDetailInformation(Shell parent,
+	public static DetailMessageDialog openDetailInformation(Shell parent,
+			String title, String message, String shortDetail) {
+		return openDetailInformation(parent, title, message, shortDetail,
+				(String) null);
+	}
+
+	/**
+	 * Convenience method to open a standard information dialog.
+	 * 
+	 * @param parent
+	 *            the parent shell of the dialog, or <code>null</code> if none
+	 * @param title
+	 *            the dialog's title, or <code>null</code> if none
+	 * @param message
+	 *            the message
+	 * @param shortDetail
+	 *            a show details message to give more precision about the
+	 *            warning
+	 * @param longDetail
+	 *            a long description of the warning.
+	 * @return the dialog, after being closed by the user, which the client can
+	 *         only call <code>getReturnCode()</code> or
+	 *         <code>getToggleState()</code>
+	 */
+	public static DetailMessageDialog openDetailInformation(Shell parent,
 			String title, String message, String shortDetail, String longDetail) {
 		DetailMessageDialog dialog = new DetailMessageDialog(parent, title,
 				// Sets window's icon
@@ -161,6 +221,32 @@ public class DetailMessageDialog extends MessageDialogWithToggle {
 		dialog.setPrefKey(null);
 		dialog.open();
 		return dialog;
+	}
+
+	/**
+	 * Convenience method to open a standard information dialog.
+	 * 
+	 * @param parent
+	 *            the parent shell of the dialog, or <code>null</code> if none
+	 * @param title
+	 *            the dialog's title, or <code>null</code> if none
+	 * @param message
+	 *            the message
+	 * @param shortDetail
+	 *            a show details message to give more precision about the error
+	 * @param longDetail
+	 *            the exception to show
+	 * @return the dialog, after being closed by the user, which the client can
+	 *         only call <code>getReturnCode()</code> or
+	 *         <code>getToggleState()</code>
+	 */
+	public static DetailMessageDialog openDetailInformation(Shell parent,
+			String title, String message, String shortDetail,
+			Throwable longDetail) {
+		StringWriter sw = new StringWriter();
+		longDetail.printStackTrace(new PrintWriter(sw));
+		return openDetailInformation(parent, title, message, shortDetail,
+				sw.toString());
 	}
 
 	/**
@@ -287,7 +373,8 @@ public class DetailMessageDialog extends MessageDialogWithToggle {
 	}
 
 	/**
-	 * Convenience method to open a standard warning dialog.
+	 * Convenient method to open a standard warning dialog without long
+	 * description message.
 	 * 
 	 * @param parent
 	 *            the parent shell of the dialog, or <code>null</code> if none
@@ -295,18 +382,25 @@ public class DetailMessageDialog extends MessageDialogWithToggle {
 	 *            the dialog's title, or <code>null</code> if none
 	 * @param message
 	 *            the message
-	 * @param toggleMessage
-	 *            the message for the toggle control, or <code>null</code> for
-	 *            the default message
-	 * @param toggleState
-	 *            the initial state for the toggle
-	 * @param store
-	 *            the IPreference store in which the user's preference should be
-	 *            persisted; <code>null</code> if you don't want it persisted
-	 *            automatically.
-	 * @param key
-	 *            the key to use when persisting the user's preference;
-	 *            <code>null</code> if you don't want it persisted.
+	 * @return the dialog, after being closed by the user, which the client can
+	 *         only call <code>getReturnCode()</code> or
+	 *         <code>getToggleState()</code>
+	 */
+	public static MessageDialogWithToggle openDetailWarning(Shell parent,
+			String title, String message, String shortDetail) {
+		return openDetailWarning(parent, title, message, shortDetail,
+				(String) null);
+	}
+
+	/**
+	 * Convenient method to open a standard warning dialog.
+	 * 
+	 * @param parent
+	 *            the parent shell of the dialog, or <code>null</code> if none
+	 * @param title
+	 *            the dialog's title, or <code>null</code> if none
+	 * @param message
+	 *            the message
 	 * @return the dialog, after being closed by the user, which the client can
 	 *         only call <code>getReturnCode()</code> or
 	 *         <code>getToggleState()</code>
@@ -323,6 +417,29 @@ public class DetailMessageDialog extends MessageDialogWithToggle {
 		dialog.setPrefKey(null);
 		dialog.open();
 		return dialog;
+	}
+
+	/**
+	 * Convenient method to open a standard warning dialog without long
+	 * description message.
+	 * 
+	 * @param parent
+	 *            the parent shell of the dialog, or <code>null</code> if none
+	 * @param title
+	 *            the dialog's title, or <code>null</code> if none
+	 * @param message
+	 *            the message
+	 * @return the dialog, after being closed by the user, which the client can
+	 *         only call <code>getReturnCode()</code> or
+	 *         <code>getToggleState()</code>
+	 */
+	public static MessageDialogWithToggle openDetailWarning(Shell parent,
+			String title, String message, String shortDetail,
+			Throwable longDetail) {
+		StringWriter sw = new StringWriter();
+		longDetail.printStackTrace(new PrintWriter(sw));
+		return openDetailWarning(parent, title, message, shortDetail,
+				sw.toString());
 	}
 
 	/**
