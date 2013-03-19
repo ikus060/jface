@@ -93,25 +93,6 @@ public class ColumnSupport {
 	private static Comparator naturalComparator;
 
 	/**
-	 * Create a new columns for the given viewer. The column content will be map
-	 * using the given attributeMap.
-	 * 
-	 * @param viewer
-	 *            the viewer
-	 * @param columnLabel
-	 *            the column label
-	 * @param knownElements
-	 *            known elements (should be the content provider known elements)
-	 * @param property
-	 *            the value property used as label
-	 * @return a new instance of {@link ColumnSupport} for chaining.
-	 */
-	public static ColumnSupport create(TableViewer viewer, String columnLabel,
-			IObservableSet knownElements, IValueProperty property) {
-		return create(viewer, SWT.NONE, columnLabel, knownElements, property);
-	}
-
-	/**
 	 * Create a new columns for the given table viewer. The column content will
 	 * be map using the given value property.
 	 * 
@@ -135,11 +116,11 @@ public class ColumnSupport {
 	}
 
 	/**
-	 * Create a new columns for the given tree viewer. The column content will
-	 * be map using the given value property.
+	 * Create a new columns for the given viewer. The column content will be map
+	 * using the given attributeMap.
 	 * 
 	 * @param viewer
-	 *            the tree viewer
+	 *            the viewer
 	 * @param columnLabel
 	 *            the column label
 	 * @param knownElements
@@ -148,7 +129,7 @@ public class ColumnSupport {
 	 *            the value property used as label
 	 * @return a new instance of {@link ColumnSupport} for chaining.
 	 */
-	public static ColumnSupport create(TreeViewer viewer, String columnLabel,
+	public static ColumnSupport create(TableViewer viewer, String columnLabel,
 			IObservableSet knownElements, IValueProperty property) {
 		return create(viewer, SWT.NONE, columnLabel, knownElements, property);
 	}
@@ -174,6 +155,25 @@ public class ColumnSupport {
 			IValueProperty property) {
 		return new ColumnSupport(new TreeViewerColumn(viewer, style),
 				new TreeViewerUpdater(), columnLabel, knownElements, property);
+	}
+
+	/**
+	 * Create a new columns for the given tree viewer. The column content will
+	 * be map using the given value property.
+	 * 
+	 * @param viewer
+	 *            the tree viewer
+	 * @param columnLabel
+	 *            the column label
+	 * @param knownElements
+	 *            known elements (should be the content provider known elements)
+	 * @param property
+	 *            the value property used as label
+	 * @return a new instance of {@link ColumnSupport} for chaining.
+	 */
+	public static ColumnSupport create(TreeViewer viewer, String columnLabel,
+			IObservableSet knownElements, IValueProperty property) {
+		return create(viewer, SWT.NONE, columnLabel, knownElements, property);
 	}
 
 	/**
@@ -705,6 +705,43 @@ public class ColumnSupport {
 			final IValueProperty property, final CellEditor cellEditor,
 			final UpdateValueStrategy targetToModel,
 			final UpdateValueStrategy modelToTarget) {
+		return addViewerEditingSupport(dbc, property, null, cellEditor,
+				targetToModel, modelToTarget);
+	}
+
+	/**
+	 * Add viewer editing support to the column.
+	 * <p>
+	 * It's recommended to provide an update strategy for target to model to
+	 * persist the data. It should be created with
+	 * UpdateValueStrategy.POLICY_CONVERT.
+	 * <p>
+	 * It's recommended to provide a null strategy for model to target.
+	 * 
+	 * @param dbc
+	 *            the data binding context
+	 * @param property
+	 *            the property to be edited.
+	 * @param canEditProperty
+	 *            a property to verify if the property may be edited or null to
+	 *            always allow editing. The property should return False or null
+	 *            to present editing.
+	 * @param cellEditor
+	 *            the cell editor. Should have a getViewer() function returning
+	 *            the internal viewer object.
+	 * @param targetToModel
+	 *            strategy to employ when the target is the source of the change
+	 *            and the model is the destination or null to use default
+	 * @param modelToTarget
+	 *            strategy to employ when the model is the source of the change
+	 *            and the target is the destination or null to use default.
+	 * @return same object for chaining
+	 */
+	public ColumnSupport addViewerEditingSupport(final DataBindingContext dbc,
+			final IValueProperty property,
+			final IValueProperty canEditProperty, final CellEditor cellEditor,
+			final UpdateValueStrategy targetToModel,
+			final UpdateValueStrategy modelToTarget) {
 
 		final Viewer cellEditorViewer = getViewer(cellEditor);
 		if (cellEditorViewer == null) {
@@ -715,6 +752,22 @@ public class ColumnSupport {
 		// Sets the editing support
 		this.column.setEditingSupport(new ObservableValueEditingSupport(
 				this.column.getViewer(), dbc) {
+
+			/**
+			 * This implementation use the canEditProperty to determine if we
+			 * can edit the element.
+			 */
+			@Override
+			protected boolean canEdit(Object element) {
+				if (canEditProperty == null) {
+					return true;
+				}
+				Object value = canEditProperty.getValue(element);
+				if (value instanceof Boolean) {
+					return ((Boolean) value).booleanValue();
+				}
+				return value != null;
+			}
 
 			/**
 			 * This implementation create the binding using the update strategy
