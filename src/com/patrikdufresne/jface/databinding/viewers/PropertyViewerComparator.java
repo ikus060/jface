@@ -30,11 +30,6 @@ public class PropertyViewerComparator extends ViewerComparator {
 	private Comparator comparator;
 
 	/**
-	 * The property used to compare.
-	 */
-	private IValueProperty property;
-
-	/**
 	 * Create a new viewer comparator with a self value property and the given
 	 * comparator.
 	 * 
@@ -42,7 +37,10 @@ public class PropertyViewerComparator extends ViewerComparator {
 	 *            the comparator.
 	 */
 	public PropertyViewerComparator(Comparator comparator) {
-		this(null, comparator);
+		if (comparator == null) {
+			throw new IllegalArgumentException();
+		}
+		this.comparator = comparator;
 	}
 
 	/**
@@ -60,17 +58,18 @@ public class PropertyViewerComparator extends ViewerComparator {
 	 * 
 	 * @param comparator
 	 */
-	public PropertyViewerComparator(IValueProperty property,
-			Comparator comparator) {
-		this.property = property;
-		if (this.property == null) {
-			this.property = new SelfValueProperty(null);
-		}
+	public PropertyViewerComparator(final IValueProperty property,
+			final Comparator comparator) {
+		this(new Comparator() {
+			final Comparator finalComparator = comparator == null ? ColumnSupport
+					.naturalComparator() : comparator;
 
-		this.comparator = comparator;
-		if (this.comparator == null) {
-			this.comparator = ColumnSupport.naturalComparator();
-		}
+			@Override
+			public int compare(Object o1, Object o2) {
+				return finalComparator.compare(property.getValue(o1),
+						property.getValue(o2));
+			}
+		});
 	}
 
 	/**
