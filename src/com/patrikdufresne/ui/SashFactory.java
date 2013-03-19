@@ -39,7 +39,7 @@ public class SashFactory {
 		private final Composite composite;
 
 		int compositeWidth;
-									private final GridData data;
+		private final GridData data;
 
 		// to tray when resizing
 		private int remainder = 0; // Used to prevent rounding errors from
@@ -137,7 +137,8 @@ public class SashFactory {
 	 *            the preference key
 	 */
 	private static void createPane(final Composite parent, boolean separator,
-			final IPreferenceStore prefStore, final String prefKey, int side) {
+			final IPreferenceStore prefStore, final String prefKey,
+			final int side) {
 
 		// Check if the parent only has two children
 		if (parent.getChildren().length != 2) {
@@ -165,7 +166,11 @@ public class SashFactory {
 		// Create the ash control
 		final Sash sash = new Sash(parent, SWT.VERTICAL);
 		sash.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-		sash.moveBelow(main);
+		if (side == SWT.RIGHT) {
+			sash.moveBelow(main);
+		} else {
+			sash.moveAbove(main);
+		}
 
 		// Create the separator if required.
 		final Label labelSeparator = separator ? new Label(parent,
@@ -194,11 +199,16 @@ public class SashFactory {
 			@Override
 			public void handleEvent(Event event) {
 				if (event.detail != SWT.DRAG) {
-					Rectangle clientArea = parent.getClientArea();
-					int newWidth = clientArea.width
-							- event.x
-							- (sash.getSize().x + (labelSeparator != null ? labelSeparator
-									.getSize().x : 0));
+					int newWidth;
+					if (side == SWT.RIGHT) {
+						Rectangle clientArea = parent.getClientArea();
+						newWidth = clientArea.width
+								- event.x
+								- (sash.getSize().x + (labelSeparator != null ? labelSeparator
+										.getSize().x : 0));
+					} else {
+						newWidth = event.x;
+					}
 					if (newWidth != data.widthHint) {
 						data.widthHint = newWidth;
 						parent.layout();
