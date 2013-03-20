@@ -36,6 +36,12 @@ public class ColumnViewerPreferences {
 	 * Preference key used to store the sorting direction.
 	 */
 	private static final String PREF_SORT_DIRECTION = ".direction"; //$NON-NLS-1$
+	/**
+	 * Define the minimum width of a column. When a column width is restore, we
+	 * don't want to hide a column, so we are not restoring small column width.
+	 * Instead we keep the default value.
+	 */
+	private static final int MIN_WIDTH = 10;
 
 	/**
 	 * Create a new column preferences.
@@ -247,8 +253,10 @@ public class ColumnViewerPreferences {
 	private void setColumnWidths(int[] widths) {
 		int count = this.updater.getColumnCount(this.viewer);
 		for (int i = 0; i < widths.length && i < count; i++) {
-			this.updater.setWidth(this.updater.getColumn(this.viewer, i),
-					widths[i]);
+			if (widths[i] >= MIN_WIDTH) {
+				this.updater.setWidth(this.updater.getColumn(this.viewer, i),
+						widths[i]);
+			}
 		}
 	}
 }
