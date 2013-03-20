@@ -63,7 +63,7 @@ public class ValidatorsTest {
 
 		assertTrue(validator.validate("5").isOK()); //$NON-NLS-1$
 
-		assertTrue(validator.validate("5.6").isOK()); //$NON-NLS-1$
+		assertTrue(validator.validate("18.505").isOK()); //$NON-NLS-1$
 
 		assertTrue(validator.validate("5,7").isOK()); //$NON-NLS-1$
 

@@ -96,8 +96,6 @@ public class TextProposalViewer extends ContentViewer {
 		}
 	};
 
-	private ViewerFilter filter;
-
 	private Listener listener = new Listener() {
 		@Override
 		public void handleEvent(Event event) {
@@ -198,10 +196,10 @@ public class TextProposalViewer extends ContentViewer {
 	 *            the parent element
 	 * @return a filtered array of child elements
 	 */
-	protected Object[] getFilteredChildren(Object parent) {
+	protected Object[] getFilteredChildren(Object parent, ViewerFilter filter) {
 		Object[] result = getRawChildren(parent);
-		if (this.filter != null) {
-			Object[] filteredResult = this.filter.filter(this, parent, result);
+		if (filter != null) {
+			Object[] filteredResult = filter.filter(this, parent, result);
 			result = filteredResult;
 		}
 		return result;
@@ -239,7 +237,7 @@ public class TextProposalViewer extends ContentViewer {
 		}
 
 		// Create the filter
-		this.filter = new ViewerFilter() {
+		ViewerFilter filter = new ViewerFilter() {
 			@Override
 			public boolean select(Viewer viewer, Object parentElement,
 					Object element) {
@@ -260,7 +258,7 @@ public class TextProposalViewer extends ContentViewer {
 		};
 
 		// Retrieve a list of elements from the filtered content provider
-		Object[] elements = getSortedChildren(getInput());
+		Object[] elements = getSortedChildren(getInput(), filter);
 		int count = Math.min(50, elements.length);
 		IContentProposal[] proposals = new IContentProposal[count];
 		for (int i = 0; i < count; i++) {
@@ -311,8 +309,8 @@ public class TextProposalViewer extends ContentViewer {
 	 *            the parent element
 	 * @return a sorted and filtered array of child elements
 	 */
-	protected Object[] getSortedChildren(Object parent) {
-		Object[] result = getFilteredChildren(parent);
+	protected Object[] getSortedChildren(Object parent, ViewerFilter filter) {
+		Object[] result = getFilteredChildren(parent, filter);
 		if (this.sorter != null) {
 			// be sure we're not modifying the original array from the model
 			result = result.clone();
@@ -380,19 +378,27 @@ public class TextProposalViewer extends ContentViewer {
 		}
 	}
 
+	/**
+	 * This implementation sets the selection of the viewer.
+	 */
 	@Override
 	public void setSelection(ISelection selection, boolean reveal) {
 		if (selection instanceof IStructuredSelection) {
 			Object element = ((IStructuredSelection) selection)
 					.getFirstElement();
-
 			if (element != null) {
-				String string = getLabelProviderText(element);
-				this.text.setText(string);
+				Object[] children = getRawChildren(getInput());
+				for (Object child : children) {
+					if (element.equals(child)) {
+						this.text.setText(getLabelProviderText(element));
+						updateSelection(new StructuredSelection(element));
+						return;
+					}
+				}
 			} else {
 				this.text.setText(""); //$NON-NLS-1$
+				updateSelection(new StructuredSelection());
 			}
-			updateSelection((IStructuredSelection) selection);
 		}
 	}
 
