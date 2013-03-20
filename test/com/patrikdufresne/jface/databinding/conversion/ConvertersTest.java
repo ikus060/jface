@@ -59,11 +59,34 @@ public class ConvertersTest {
 
 		assertEquals(Float.valueOf(5f), converter.convert("5 $")); //$NON-NLS-1$
 
+		assertEquals(Float.valueOf(5f), converter.convert("5$")); //$NON-NLS-1$
+
 		assertEquals(Float.valueOf(5.5f), converter.convert("5,5 $")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(5.5f), converter.convert("5,5$")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(5.5f), converter.convert("5.5 $")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(5.5f), converter.convert("5.5$")); //$NON-NLS-1$
 
 		assertEquals(Float.valueOf(5f), converter.convert("5")); //$NON-NLS-1$
 
 		assertEquals(Float.valueOf(5.5f), converter.convert("5,5")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(5.5f), converter.convert("5.5")); //$NON-NLS-1$
+
+	}
+
+	@Test
+	public void testStringToFloat() {
+		IConverter converter = Converters.stringToFloat(true, 0, 0,
+				Locale.CANADA_FRENCH);
+
+		assertEquals(Float.valueOf(7f), converter.convert("7")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(7.6f), converter.convert("7,6")); //$NON-NLS-1$
+
+		assertEquals(Float.valueOf(7.7f), converter.convert("7.7")); //$NON-NLS-1$
 
 	}
 
