@@ -99,6 +99,7 @@ public abstract class AbstractViewPart extends ViewPart {
 		return sash;
 
 	}
+
 	/**
 	 * Create a table viewer.
 	 * 
@@ -339,5 +340,14 @@ public abstract class AbstractViewPart extends ViewPart {
 
 	protected DataBindingContext getDbc() {
 		return this.dbc;
+	}
+
+	/**
+	 * Return the observables managers instance of this view part.
+	 * 
+	 * @return
+	 */
+	protected ObservablesManager getOm() {
+		return om;
 	}
 }
