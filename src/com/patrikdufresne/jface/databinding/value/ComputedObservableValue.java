@@ -3,7 +3,9 @@ package com.patrikdufresne.jface.databinding.value;
 import java.util.Arrays;
 
 import org.eclipse.core.databinding.observable.ChangeEvent;
+import org.eclipse.core.databinding.observable.DisposeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
+import org.eclipse.core.databinding.observable.IDisposeListener;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.core.databinding.observable.IStaleListener;
 import org.eclipse.core.databinding.observable.Realm;
@@ -37,11 +39,13 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 	 * 
 	 */
 	private class PrivateInterface implements Runnable, IChangeListener,
-			IStaleListener {
+			IStaleListener, IDisposeListener {
+		@Override
 		public void handleChange(ChangeEvent event) {
 			makeDirty();
 		}
 
+		@Override
 		public void handleStale(StaleEvent event) {
 			if (!dirty && !stale) {
 				stale = true;
@@ -49,8 +53,17 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 			}
 		}
 
+		@Override
 		public void run() {
 			cachedValue = calculate();
+		}
+
+		/**
+		 * This implementation will dipose this observable.
+		 */
+		@Override
+		public void handleDispose(DisposeEvent event) {
+			dispose();
 		}
 	}
 
@@ -64,19 +77,67 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 
 	private boolean dirty = true;
 
+	private boolean disposeOnDependencyDispose;
+
 	private PrivateInterface privateInterface = new PrivateInterface();
 
 	private boolean stale = false;
 
 	private Object valueType;
 
+	/**
+	 * Create a new computed observable value with default realm, without value
+	 * type and the given dependency list.
+	 * 
+	 * @param disposeOnDependencyDispose
+	 *            True to dispose this observable whenever one of it's
+	 *            dependency is disposed.
+	 * @param dependencies
+	 *            list of dependency.
+	 */
+	public ComputedObservableValue(boolean disposeOnDependencyDispose,
+			IObservableValue... dependencies) {
+		this(Realm.getDefault(), null, disposeOnDependencyDispose, dependencies);
+	}
+
+	/**
+	 * Create a new computed observable value with default realm, without value
+	 * type and the given dependency list.
+	 * 
+	 * @param dependencies
+	 *            list of dependency.
+	 */
 	public ComputedObservableValue(IObservableValue... dependencies) {
 		this(Realm.getDefault(), null, dependencies);
 	}
 
 	/**
+	 * Create a new computed observable value with default realm and the given
+	 * dependencies dependencies.
+	 * 
 	 * @param valueType
-	 *            can be <code>null</code>
+	 *            this observable value type or null
+	 * @param disposeOnDependencyDispose
+	 *            True to dispose this observable whenever one of it's
+	 *            dependency is disposed.
+	 * @param dependencies
+	 *            list of dependency.
+	 */
+	public ComputedObservableValue(Object valueType,
+			boolean disposeOnDependencyDispose,
+			IObservableValue... dependencies) {
+		this(Realm.getDefault(), valueType, disposeOnDependencyDispose,
+				dependencies);
+	}
+
+	/**
+	 * Create a new computed observable value with default realm and the given
+	 * dependencies dependencies.
+	 * 
+	 * @param valueType
+	 *            this observable value type or null
+	 * @param dependencies
+	 *            list of dependency.
 	 */
 	public ComputedObservableValue(Object valueType,
 			IObservableValue... dependencies) {
@@ -84,8 +145,32 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 	}
 
 	/**
-	 * @param realm
+	 * Create a new computed observable value with the given realm and
+	 * dependencies.
 	 * 
+	 * @param realm
+	 *            the realm of this observable
+	 * @param disposeOnDependencyDispose
+	 *            True to dispose this observable whenever one of it's
+	 *            dependency is disposed.
+	 * @param dependencies
+	 *            list of dependency.
+	 */
+	public ComputedObservableValue(Realm realm,
+			boolean disposeOnDependencyDispose,
+			IObservableValue... dependencies) {
+		this(realm, null, disposeOnDependencyDispose, dependencies);
+	}
+
+	/**
+	 * Create a new computed observable value with the given realm and
+	 * dependencies.
+	 * 
+	 * @param realm
+	 *            the realm of this observable
+	 * 
+	 * @param dependencies
+	 *            list of dependency.
 	 */
 	public ComputedObservableValue(Realm realm,
 			IObservableValue... dependencies) {
@@ -93,16 +178,48 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 	}
 
 	/**
+	 * Create a new computed observable value.
+	 * 
 	 * @param realm
+	 *            the realm of this observable
 	 * @param valueType
+	 *            this observable value type
+	 * @param disposeOnDependencyDispose
+	 *            True to dispose this observable whenever one of it's
+	 *            dependency is disposed.
+	 * @param dependencies
+	 *            list of dependency.
 	 */
 	public ComputedObservableValue(Realm realm, Object valueType,
+			boolean disposeOnDependencyDispose,
 			IObservableValue... dependencies) {
 		super(realm);
 		this.valueType = valueType;
+		this.disposeOnDependencyDispose = disposeOnDependencyDispose;
 		this.dependencies = dependencies;
+		if (this.disposeOnDependencyDispose) {
+			for (IObservableValue dependency : dependencies) {
+				dependency.addDisposeListener(this.privateInterface);
+			}
+		}
 	}
 
+	/**
+	 * Create a new computed observable value.
+	 * 
+	 * @param realm
+	 *            the realm of this observable
+	 * @param valueType
+	 *            this observable value type
+	 * @param dependencies
+	 *            list of dependency.
+	 */
+	public ComputedObservableValue(Realm realm, Object valueType,
+			IObservableValue... dependencies) {
+		this(realm, valueType, false, dependencies);
+	}
+
+	@Override
 	public synchronized void addChangeListener(IChangeListener listener) {
 		super.addChangeListener(listener);
 		// If somebody is listening, we need to make sure we attach our own
@@ -110,6 +227,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 		computeValueForListeners();
 	}
 
+	@Override
 	public synchronized void addValueChangeListener(
 			IValueChangeListener listener) {
 		super.addValueChangeListener(listener);
@@ -139,6 +257,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 	 */
 	private void computeValueForListeners() {
 		getRealm().exec(new Runnable() {
+			@Override
 			public void run() {
 				if (dependencies == null) {
 					// We are not currently listening.
@@ -153,6 +272,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 		});
 	}
 
+	@Override
 	public synchronized void dispose() {
 		super.dispose();
 		stopListening();
@@ -163,41 +283,22 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 	 * this observable is identify as dirty. Otherwise, the cached value is
 	 * returned.
 	 */
+	@Override
 	protected final Object doGetValue() {
 		if (dirty) {
 
 			cachedValue = calculate();
 
 			dirty = false;
-			
+
 			startListening();
-
-			// This line will do the following:
-			// - Run the calculate method
-			// - While doing so, add any observable that is touched to the
-			// dependencies list
-			// IObservable[] newDependencies = ObservableTracker.runAndMonitor(
-			// privateInterface, privateInterface, null);
-
-			// stale = false;
-			// for (int i = 0; i < dependencies.length; i++) {
-			// IObservable observable = dependencies[i];
-			// // Add a change listener to the new dependency.
-			// if (observable.isStale()) {
-			// stale = true;
-			// }
-			// // else {
-			// // observable.addStaleListener(privateInterface);
-			// // }
-			// }
-
-			// dependencies = newDependencies;
 
 		}
 
 		return cachedValue;
 	}
 
+	@Override
 	public Object getValueType() {
 		return valueType;
 	}
@@ -206,10 +307,12 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	protected boolean hasListeners() {
 		return super.hasListeners();
 	}
 
+	@Override
 	public boolean isStale() {
 		// we need to recompute, otherwise staleness wouldn't mean anything
 		getValue();
@@ -228,10 +331,12 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 			// value lazily.
 			fireValueChange(new ValueDiff() {
 
+				@Override
 				public Object getNewValue() {
 					return getValue();
 				}
 
+				@Override
 				public Object getOldValue() {
 					return oldValue;
 				}
@@ -247,7 +352,6 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 		if (dependencies != null) {
 			for (int i = 0; i < dependencies.length; i++) {
 				IObservable observable = dependencies[i];
-
 				observable.addChangeListener(privateInterface);
 				observable.addStaleListener(privateInterface);
 			}
@@ -263,7 +367,6 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
 		if (dependencies != null) {
 			for (int i = 0; i < dependencies.length; i++) {
 				IObservable observable = dependencies[i];
-
 				observable.removeChangeListener(privateInterface);
 				observable.removeStaleListener(privateInterface);
 			}
