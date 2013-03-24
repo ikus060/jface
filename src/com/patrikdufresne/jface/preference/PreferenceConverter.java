@@ -12,7 +12,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
  * @author Patrik Dufresne
  * 
  */
-public class ArrayPreferences {
+public class PreferenceConverter {
+
 	/**
 	 * Returns the current value of the integer-array-valued preference with the
 	 * given name. Returns an empty array if there is no preference with the

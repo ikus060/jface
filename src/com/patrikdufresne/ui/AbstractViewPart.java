@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import com.patrikdufresne.jface.databinding.collections.FilteredObservableSet;
-import com.patrikdufresne.jface.preference.ArrayPreferences;
+import com.patrikdufresne.jface.preference.PreferenceConverter;
 import com.patrikdufresne.ui.ViewPart;
 
 /**
@@ -75,9 +75,9 @@ public abstract class AbstractViewPart extends ViewPart {
 		sash.addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				ArrayPreferences.setDefault(preferenceStore, prefKey,
+				PreferenceConverter.setDefault(preferenceStore, prefKey,
 						defaultWeights);
-				int[] weights = ArrayPreferences.getIntArray(preferenceStore,
+				int[] weights = PreferenceConverter.getIntArray(preferenceStore,
 						prefKey);
 				if (weights.length == sash.getWeights().length) {
 					sash.setWeights(weights);
@@ -91,7 +91,7 @@ public abstract class AbstractViewPart extends ViewPart {
 		sash.addListener(SWT.Dispose, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				ArrayPreferences.setValue(preferenceStore, prefKey,
+				PreferenceConverter.setValue(preferenceStore, prefKey,
 						((SashForm) event.widget).getWeights());
 			}
 		});
