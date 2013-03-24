@@ -20,8 +20,9 @@ public class NormalizedComparator implements Comparator<String> {
 		return Normalizer
 				.normalize(s1, Normalizer.Form.NFD)
 				.replaceAll(PATTERN, EMPTY)
+				.toLowerCase()
 				.compareTo(
 						Normalizer.normalize(s2, Normalizer.Form.NFD)
-								.replaceAll(PATTERN, EMPTY));
+								.replaceAll(PATTERN, EMPTY).toLowerCase());
 	}
 }
