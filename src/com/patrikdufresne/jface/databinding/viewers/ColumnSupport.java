@@ -426,7 +426,7 @@ public class ColumnSupport {
 	 * @return
 	 */
 	public ColumnSupport addPropertySorting() {
-		return addPropertySorting(null);
+		return addPropertySorting(null, null);
 	}
 
 	/**
@@ -437,6 +437,17 @@ public class ColumnSupport {
 	 */
 	public ColumnSupport addPropertySorting(IValueProperty property) {
 		return addPropertySorting(property, null);
+	}
+
+	/**
+	 * Add sorting capability to the column.
+	 * 
+	 * @param comparator
+	 *            the comparator or null to use natural order
+	 * @return same object for chaining
+	 */
+	public ColumnSupport addPropertySorting(Comparator comparator) {
+		return addPropertySorting(null, comparator);
 	}
 
 	/**
