@@ -4,6 +4,8 @@
  */
 package com.patrikdufresne.jface.databinding.conversion;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -42,7 +44,7 @@ public class Converters {
 
 		@Override
 		public Object convert(Object fromObject) {
-			if (!(fromObject instanceof Float)) {
+			if (!(fromObject instanceof Number)) {
 				return ""; //$NON-NLS-1$
 			}
 			return format.format(fromObject);
@@ -67,8 +69,10 @@ public class Converters {
 
 		@Override
 		public Object convert(Object fromObject) {
+			// If the source is null, convert it to null or 0.
 			if (fromObject == null) {
-				return ValidationStatus.ok();
+				return getToType() instanceof Class
+						&& ((Class) getToType()).isPrimitive() ? 0 : null;
 			}
 			String input = fromObject.toString();
 			// Try to parse the string using the percent format
@@ -76,10 +80,51 @@ public class Converters {
 				ParsePosition pos = new ParsePosition(0);
 				Number number = format.parse(input, pos);
 				if (pos.getIndex() >= input.length()) {
-					return Float.valueOf(number.floatValue());
+					return typeCast(number);
 				}
 			}
 			throw new IllegalArgumentException();
+		}
+
+		private Object typeCast(Number n) {
+			if (Integer.class.equals(getToType())
+					|| Integer.TYPE.equals(getToType())) {
+				return Integer.valueOf(n.intValue());
+			} else if (Double.class.equals(getToType())
+					|| Double.TYPE.equals(getToType())) {
+				return Double.valueOf(n.doubleValue());
+			} else if (Long.class.equals(getToType())
+					|| Long.TYPE.equals(getToType())) {
+				return Long.valueOf(n.longValue());
+			} else if (Float.class.equals(getToType())
+					|| Float.TYPE.equals(getToType())) {
+				return Float.valueOf(n.floatValue());
+			} else if (BigInteger.class.equals(getToType())) {
+				if (n instanceof Long)
+					return BigInteger.valueOf(n.longValue());
+				else if (n instanceof BigInteger)
+					return n;
+				else if (n instanceof BigDecimal)
+					return ((BigDecimal) n).toBigInteger();
+				else
+					return new BigDecimal(n.doubleValue()).toBigInteger();
+			} else if (BigDecimal.class.equals(getToType())) {
+				if (n instanceof Long)
+					return BigDecimal.valueOf(n.longValue());
+				else if (n instanceof BigInteger)
+					return new BigDecimal((BigInteger) n);
+				else if (n instanceof BigDecimal)
+					return n;
+				else if (n instanceof Double)
+					return new BigDecimal(n.doubleValue());
+			} else if (Short.class.equals(getToType())
+					|| Short.TYPE.equals(getToType())) {
+				return Short.valueOf(n.shortValue());
+			} else if (Byte.class.equals(getToType())
+					|| Byte.TYPE.equals(getToType())) {
+				return Byte.valueOf(n.byteValue());
+			}
+			return n;
 		}
 	}
 
@@ -89,6 +134,74 @@ public class Converters {
 	 * Singleton converter.
 	 */
 	private static IConverter removeFrontNumber;
+
+	/**
+	 * Convert {@link BigDecimal} into a formated currency string using the
+	 * default locale.
+	 * 
+	 * @return the converter
+	 */
+	public static IConverter bigDecimalToCurrency() {
+		return bigDecimalToCurrency(Locale.getDefault());
+	}
+
+	/**
+	 * Convert {@link BigDecimal} into a formated currency string using the
+	 * specified locale.
+	 * 
+	 * @param locale
+	 *            the locale
+	 * @return the converter
+	 */
+	public static IConverter bigDecimalToCurrency(Locale locale) {
+		return numberToCurrency(BigDecimal.class, locale);
+	}
+
+	/**
+	 * Convert a {@link BigDecimal} into a formated percentage string using the
+	 * default locale.
+	 * 
+	 * @return the converter
+	 */
+	public static IConverter bigDecimalToPercent() {
+		return numberToPercent(BigDecimal.class, 0, 0, Locale.getDefault());
+	}
+
+	/**
+	 * Convert a {@link BigDecimal} into a formated percentage string using the
+	 * default locale.
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @return the converter
+	 */
+	public static IConverter bigDecimalToPercent(int minDecimal, int maxDecimal) {
+		return numberToPercent(BigDecimal.class, minDecimal, maxDecimal,
+				Locale.getDefault());
+	}
+
+	/**
+	 * Convert a {@link BigDecimal} into a formated percentage string using the
+	 * specified locale.
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param locale
+	 *            the specified locale
+	 * @return the converter
+	 */
+	public static IConverter bigDecimalToPercent(int minDecimal,
+			int maxDecimal, Locale locale) {
+		return numberToPercent(BigDecimal.class, minDecimal, maxDecimal, locale);
+	}
 
 	/**
 	 * Create a converter to convert a boolean value to a string value.
@@ -132,6 +245,28 @@ public class Converters {
 	}
 
 	/**
+	 * Return a converter to transformed a formated string in a
+	 * {@link BigDecimal} using the default locale.
+	 * 
+	 * @return the converter
+	 */
+	public static IConverter currencyToBigDecimal() {
+		return currencyToBigDecimal(Locale.getDefault());
+	}
+
+	/**
+	 * Return a converter to transform a formated string into a
+	 * {@link BigDecimal} number using the specified locale.
+	 * 
+	 * @param locale
+	 *            the locale used for conversion.
+	 * @return the converter
+	 */
+	public static IConverter currencyToBigDecimal(Locale locale) {
+		return currencyToNumber(BigDecimal.class, locale);
+	}
+
+	/**
 	 * Return a converter to transform a formated currency string into a float
 	 * using default locale.
 	 * 
@@ -152,14 +287,26 @@ public class Converters {
 	 * @return the converter
 	 */
 	public static IConverter currencyToFloat(boolean primitive, Locale locale) {
-		// Create a list of number format to support a wide range of number
-		// format.
+		return currencyToNumber(primitive ? Float.TYPE : Float.class, locale);
+	}
+
+	/**
+	 * Return a converter to transform a formated string into a Number using the
+	 * specified locale.
+	 * 
+	 * @param toType
+	 *            the target class type.
+	 * @param locale
+	 *            the locale to use for conversion
+	 * @return the converter
+	 */
+	public static IConverter currencyToNumber(Class toType, Locale locale) {
+		// Create a list of number format to support a wide range of input.
 		final List<NumberFormat> formats = Converters
 				.createFormats(NumberFormat.getCurrencyInstance(locale));
 		formats.addAll(Converters.createFormats(NumberFormat
 				.getNumberInstance(locale)));
-		return new StringToNumberConverter(String.class, primitive ? Float.TYPE
-				: Float.class, formats);
+		return new StringToNumberConverter(String.class, toType, formats);
 	}
 
 	/**
@@ -205,19 +352,7 @@ public class Converters {
 	 * @return the converter
 	 */
 	public static IConverter floatToCurrency(boolean primitive, Locale locale) {
-
-		final NumberFormat format = NumberFormat.getCurrencyInstance(locale);
-
-		return new Converter(primitive ? Float.TYPE : Float.class, String.class) {
-
-			@Override
-			public Object convert(Object fromObject) {
-				if (!(fromObject instanceof Float)) {
-					return ""; //$NON-NLS-1$
-				}
-				return format.format(fromObject);
-			}
-		};
+		return numberToCurrency(primitive ? Float.TYPE : Float.class, locale);
 	}
 
 	/**
@@ -270,11 +405,8 @@ public class Converters {
 	 */
 	public static IConverter floatToPercent(boolean primitive, int minDecimal,
 			int maxDecimal, Locale locale) {
-		final NumberFormat format = NumberFormat.getPercentInstance(locale);
-		format.setMinimumFractionDigits(minDecimal);
-		format.setMaximumFractionDigits(maxDecimal);
-		return new NumberToStringConverter(
-				primitive ? Float.TYPE : Float.class, String.class, format);
+		return numberToPercent(primitive ? Float.TYPE : Float.class,
+				minDecimal, maxDecimal, locale);
 	}
 
 	public static IConverter floatToString(boolean primitive) {
@@ -294,6 +426,90 @@ public class Converters {
 		format.setMaximumFractionDigits(maxDecimal);
 		return new NumberToStringConverter(
 				primitive ? Float.TYPE : Float.class, String.class, format);
+	}
+
+	/**
+	 * Convert number of the given <code>fromType</code> into a curreny string.
+	 * 
+	 * @param fromType
+	 *            the source class type.
+	 * @param locale
+	 *            the locale to use for conversion
+	 * @return the converter
+	 */
+	public static IConverter numberToCurrency(Class fromType, Locale locale) {
+		return new NumberToStringConverter(fromType, String.class,
+				NumberFormat.getCurrencyInstance(locale));
+	}
+
+	/**
+	 * Convert a float into a formated percentage string using the specfiied
+	 * locale.
+	 * 
+	 * @param primitive
+	 *            True to converter into primitive type.
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param locale
+	 *            the specified locale
+	 * @return the converter
+	 */
+	public static IConverter numberToPercent(Class fromType, int minDecimal,
+			int maxDecimal, Locale locale) {
+		final NumberFormat format = NumberFormat.getPercentInstance(locale);
+		format.setMinimumFractionDigits(minDecimal);
+		format.setMaximumFractionDigits(maxDecimal);
+		return new NumberToStringConverter(fromType, String.class, format);
+	}
+
+	/**
+	 * Return a converter to transform a formated string into a
+	 * {@link BigDecimal} using default locale.
+	 * 
+	 * @return the converter
+	 */
+	public static IConverter percentToBigDecimal() {
+		return percentToBigDecimal(0, 0);
+	}
+
+	/**
+	 * Return a converter to transform a formated string into a
+	 * {@link BigDecimal} using default locale.
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @return the converter
+	 */
+	public static IConverter percentToBigDecimal(int minDecimal, int maxDecimal) {
+		return percentToNumber(BigDecimal.class, minDecimal, maxDecimal,
+				Locale.getDefault());
+	}
+
+	/**
+	 * Return a converter to transform a formated string into a
+	 * {@link BigDecimal} using default locale.
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param locale
+	 *            the localed used for conversion.
+	 * @return the converter
+	 */
+	public static IConverter percentToBigDecimal(int minDecimal,
+			int maxDecimal, Locale locale) {
+		return percentToNumber(BigDecimal.class, minDecimal, maxDecimal, locale);
 	}
 
 	/**
@@ -345,6 +561,28 @@ public class Converters {
 	 */
 	public static IConverter percentToFloat(boolean primitive, int minDecimal,
 			int maxDecimal, Locale locale) {
+		return percentToNumber(primitive ? Float.TYPE : Float.class,
+				minDecimal, maxDecimal, locale);
+	}
+
+	/**
+	 * Return a converter to transform a formated string into a number using
+	 * specified locale.
+	 * 
+	 * @param toType
+	 *            the target class type.
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param locale
+	 *            the specified locale
+	 * @return the converter
+	 */
+	public static IConverter percentToNumber(Class toType, int minDecimal,
+			int maxDecimal, Locale locale) {
 
 		final NumberFormat percentFormat = NumberFormat
 				.getPercentInstance(locale);
@@ -355,7 +593,7 @@ public class Converters {
 		format.setMinimumFractionDigits(minDecimal);
 		format.setMaximumFractionDigits(maxDecimal);
 
-		return new Converter(String.class, primitive ? Float.TYPE : Float.class) {
+		return new Converter(String.class, toType) {
 
 			@Override
 			public Object convert(Object fromObject) {
