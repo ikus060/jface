@@ -2,6 +2,7 @@ package com.patrikdufresne.jface.databinding.conversion;
 
 import static org.junit.Assert.*;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.eclipse.core.databinding.conversion.IConverter;
@@ -21,6 +22,21 @@ public class ConvertersTest {
 		assertEquals(Float.valueOf(0.05f), converter.convert("5")); //$NON-NLS-1$
 
 		assertEquals(Float.valueOf(0.055f), converter.convert("5,5")); //$NON-NLS-1$
+
+	}
+	
+	@Test
+	public void testPercentToBigDecimal() {
+		IConverter converter = Converters.percentToBigDecimal(0, 3,
+				Locale.CANADA_FRENCH);
+
+		assertEquals(BigDecimal.valueOf(5,2), converter.convert("5 %")); //$NON-NLS-1$
+
+		assertEquals(BigDecimal.valueOf(55,3), converter.convert("5,5 %")); //$NON-NLS-1$
+
+		assertEquals(BigDecimal.valueOf(5,2), converter.convert("5")); //$NON-NLS-1$
+
+		assertEquals(BigDecimal.valueOf(55,3), converter.convert("5,5")); //$NON-NLS-1$
 
 	}
 

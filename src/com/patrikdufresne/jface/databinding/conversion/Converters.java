@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class Converters {
 
-	private static final class NumberToStringConverter extends Converter {
+	private static class NumberToStringConverter extends Converter {
 		private final NumberFormat format;
 
 		private NumberToStringConverter(Object fromType, Object toType,
@@ -58,7 +58,7 @@ public class Converters {
 	 * @author Patrik Dufresne
 	 * 
 	 */
-	private static final class StringToNumberConverter extends Converter {
+	private static class StringToNumberConverter extends Converter {
 		private final List<NumberFormat> formats;
 
 		private StringToNumberConverter(Object fromType, Object toType,
@@ -116,7 +116,7 @@ public class Converters {
 				else if (n instanceof BigDecimal)
 					return n;
 				else if (n instanceof Double)
-					return new BigDecimal(n.doubleValue());
+					return BigDecimal.valueOf(n.doubleValue());
 			} else if (Short.class.equals(getToType())
 					|| Short.TYPE.equals(getToType())) {
 				return Short.valueOf(n.shortValue());
@@ -584,36 +584,30 @@ public class Converters {
 	public static IConverter percentToNumber(Class toType, int minDecimal,
 			int maxDecimal, Locale locale) {
 
-		final NumberFormat percentFormat = NumberFormat
-				.getPercentInstance(locale);
+		// Create percent format.
+		NumberFormat percentFormat = NumberFormat.getPercentInstance(locale);
 		percentFormat.setMinimumFractionDigits(minDecimal);
 		percentFormat.setMaximumFractionDigits(maxDecimal);
+		if (BigDecimal.class.equals(toType)
+				&& percentFormat instanceof DecimalFormat) {
+			((DecimalFormat) percentFormat).setParseBigDecimal(true);
+		}
+		List<NumberFormat> formats = Converters.createFormats(percentFormat);
 
-		final NumberFormat format = NumberFormat.getNumberInstance(locale);
+		// Create basic number format with 100 multiplier
+		NumberFormat format = NumberFormat.getNumberInstance(locale);
 		format.setMinimumFractionDigits(minDecimal);
 		format.setMaximumFractionDigits(maxDecimal);
-
-		return new Converter(String.class, toType) {
-
-			@Override
-			public Object convert(Object fromObject) {
-				if (fromObject == null) {
-					return null;
-				}
-				try {
-					return Float.valueOf(percentFormat.parse(
-							fromObject.toString()).floatValue());
-				} catch (ParseException e) {
-					try {
-						return Float
-								.valueOf(format.parse(fromObject.toString())
-										.floatValue() / 100f);
-					} catch (ParseException e2) {
-						return Float.valueOf(0f);
-					}
-				}
+		if (format instanceof DecimalFormat) {
+			((DecimalFormat) format).setMultiplier(100);
+			if (BigDecimal.class.equals(toType)) {
+				((DecimalFormat) percentFormat).setParseBigDecimal(true);
 			}
-		};
+		}
+		formats.addAll(Converters.createFormats(format));
+
+		return new StringToNumberConverter(String.class, toType, formats);
+
 	}
 
 	/**
