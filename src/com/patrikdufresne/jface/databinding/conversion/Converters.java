@@ -10,7 +10,6 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +19,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.jface.resource.DataFormatException;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.RGB;
@@ -201,6 +199,44 @@ public class Converters {
 	public static IConverter bigDecimalToPercent(int minDecimal,
 			int maxDecimal, Locale locale) {
 		return numberToPercent(BigDecimal.class, minDecimal, maxDecimal, locale);
+	}
+
+	/**
+	 * Convert {@link BigDecimal} into a formated number using default locale.
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @return the converter
+	 */
+	public static IConverter bigDecimalToString(int minDecimal, int maxDecimal) {
+		return bigDecimalToString(minDecimal, maxDecimal, Locale.getDefault());
+	}
+
+	/**
+	 * Convert {@link BigDecimal} into a formated number using the specified
+	 * locale.
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param locale
+	 *            the locale
+	 * @return the converter
+	 */
+	public static IConverter bigDecimalToString(int minDecimal, int maxDecimal,
+			Locale locale) {
+		NumberFormat format = NumberFormat.getNumberInstance(locale);
+		format.setMinimumFractionDigits(minDecimal);
+		format.setMaximumFractionDigits(maxDecimal);
+		return new NumberToStringConverter(BigDecimal.class, String.class,
+				format);
 	}
 
 	/**
@@ -689,6 +725,44 @@ public class Converters {
 				return StringConverter.asString((RGB) fromObject);
 			}
 		};
+	}
+
+	/**
+	 * Convert string into {@link BigDecimal}
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @return the converter
+	 */
+	public static IConverter stringToBigDecimal(int minDecimal, int maxDecimal) {
+		return stringToBigDecimal(minDecimal, maxDecimal, Locale.getDefault());
+	}
+
+	/**
+	 * Convert string into {@link BigDecimal}
+	 * 
+	 * @param minDecimal
+	 *            the minimum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param maxDecimal
+	 *            the maximum number of digits allowed in the fraction portion
+	 *            of a number
+	 * @param locale
+	 *            the locale
+	 * @return the converter
+	 */
+	public static IConverter stringToBigDecimal(int minDecimal, int maxDecimal,
+			Locale locale) {
+		NumberFormat format = NumberFormat.getNumberInstance(locale);
+		format.setMinimumFractionDigits(minDecimal);
+		format.setMaximumFractionDigits(maxDecimal);
+		final List<NumberFormat> formats = Converters.createFormats(format);
+		return new StringToNumberConverter(String.class, BigDecimal.class,
+				formats);
 	}
 
 	public static IConverter stringToDateConverter(final DateFormat format) {
