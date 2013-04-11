@@ -73,6 +73,11 @@ public class SashFactory {
 	}
 
 	/**
+	 * Minimum width value (value 10).
+	 */
+	private static final int MIN_WIDTH = 10;
+
+	/**
 	 * Create a sash control with all the required component to allow the user
 	 * to drag the sash and resize the panes.
 	 * <p>
@@ -112,7 +117,36 @@ public class SashFactory {
 	public static void createLeftPane(final Composite parent,
 			boolean separator, final IPreferenceStore prefStore,
 			final String prefKey) {
-		createPane(parent, separator, prefStore, prefKey, SWT.LEFT);
+		createPane(parent, separator, prefStore, prefKey, SWT.LEFT, null);
+	}
+
+	/**
+	 * Create a sash control with all the required component to allow the user
+	 * to drag the sash and resize the panes.
+	 * <p>
+	 * The given composite <code>parent</code> should have exactly two children.
+	 * The first children will be used as the left pane. The layout on the
+	 * parent will be changed to a grid layout.
+	 * <p>
+	 * If provided, the width of the pane will be stored and restored from the
+	 * preference store.
+	 * 
+	 * @param parent
+	 *            the composite parent
+	 * @param separator
+	 *            True to create a separator representing the sash.
+	 * @param prefStore
+	 *            The preference store used to store and restore the pane width
+	 * @param prefKey
+	 *            the preference key
+	 * @param defaultWidth
+	 *            the default width if the preference is not set or null
+	 */
+	public static void createLeftPane(final Composite parent,
+			boolean separator, final IPreferenceStore prefStore,
+			final String prefKey, int defaultWidth) {
+		createPane(parent, separator, prefStore, prefKey, SWT.LEFT,
+				Integer.valueOf(defaultWidth));
 	}
 
 	/**
@@ -138,7 +172,7 @@ public class SashFactory {
 	 */
 	private static void createPane(final Composite parent, boolean separator,
 			final IPreferenceStore prefStore, final String prefKey,
-			final int side) {
+			final int side, Integer defaultWidth) {
 
 		// Check if the parent only has two children
 		if (parent.getChildren().length != 2) {
@@ -178,16 +212,20 @@ public class SashFactory {
 		if (labelSeparator != null) {
 			labelSeparator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 			if (side == SWT.RIGHT) {
-				labelSeparator.moveBelow(main);
+				labelSeparator.moveBelow(sash);
 			} else {
-				labelSeparator.moveAbove(main);
+				labelSeparator.moveAbove(sash);
 			}
 		}
 
 		// Sets the layout data to the pane.
 		Rectangle clientArea = parent.getClientArea();
 		final GridData data = new GridData(GridData.FILL_VERTICAL);
-		if (prefStore != null && prefKey != null) {
+		if (defaultWidth != null && defaultWidth.intValue() > MIN_WIDTH) {
+			data.widthHint = defaultWidth.intValue();
+		}
+		if (prefStore != null && prefKey != null && prefStore.contains(prefKey)
+				&& prefStore.getInt(prefKey) > MIN_WIDTH) {
 			data.widthHint = prefStore.getInt(prefKey);
 		}
 		data.widthHint = Math.max(data.widthHint,
@@ -273,7 +311,37 @@ public class SashFactory {
 	public static void createRightPane(final Composite parent,
 			boolean separator, final IPreferenceStore prefStore,
 			final String prefKey) {
-		createPane(parent, separator, prefStore, prefKey, SWT.RIGHT);
+		createPane(parent, separator, prefStore, prefKey, SWT.RIGHT, null);
+	}
+
+	/**
+	 * Create a sash control with all the required component to allow the user
+	 * to drag the sash and resize the panes.
+	 * <p>
+	 * The given composite <code>parent</code> should have exactly two children.
+	 * The last children will be used as the right pane. The layout on the
+	 * parent will be changed to a grid layout.
+	 * <p>
+	 * If provided, the width of the pane will be stored and restored from the
+	 * preference store.
+	 * 
+	 * @param parent
+	 *            the composite parent
+	 * 
+	 * @param separator
+	 *            True to create a separator representing the sash.
+	 * @param prefStore
+	 *            The preference store used to store and restore the pane width
+	 * @param prefKey
+	 *            the preference key
+	 * @param defaultWidth
+	 *            the default width if the preference is not set or null
+	 */
+	public static void createRightPane(final Composite parent,
+			boolean separator, final IPreferenceStore prefStore,
+			final String prefKey, int defaultWidth) {
+		createPane(parent, separator, prefStore, prefKey, SWT.RIGHT,
+				Integer.valueOf(defaultWidth));
 	}
 
 	/**
