@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.patrikdufresne</groupId>
+	<artifactId>com.patrikdufresne.jface</artifactId>
+	<version>0.36</version>
+	<!-- Custom repository for JFace stuff. -->
+	<repositories>
+		<repository>
+			<id>swt repo</id>
+			<url>file:///home/ikus060/workspace/swt-maven</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.jface</groupId>
+			<artifactId>org.eclipse.jface</artifactId>
+			<version>3.8.0.v20120521-2329</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.swt</groupId>
+			<artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+			<version>4.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>4.8.1.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jface</groupId>
+			<artifactId>org.eclipse.jface.databinding</artifactId>
+			<version>1.4.0.I20110222-0800</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core.databinding</groupId>
+			<artifactId>org.eclipse.core.databinding.property</artifactId>
+			<version>1.4.0.I20110222-0800</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core.databinding</groupId>
+			<artifactId>org.eclipse.core.databinding.observable</artifactId>
+			<version>1.4.0.I20110222-0800</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>org.eclipse.ui.forms</artifactId>
+			<version>3.5.200.v20120521-2329</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>${artifactId}_${version}</finalName>
+	</build>
+</project>

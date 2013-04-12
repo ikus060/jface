@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.7.0.I20110522-1430.jar" sourcepath="lib/org.eclipse.jface.source_3.7.0.I20110522-1430.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding_1.4.0.I20110111-0800.jar" sourcepath="lib/org.eclipse.core.databinding.source_1.4.0.I20110111-0800.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding.observable_1.4.0.I20110222-0800.jar" sourcepath="lib/org.eclipse.core.databinding.observable.source_1.4.0.I20110222-0800.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.jface.databinding_1.5.0.I20100907-0800.jar" sourcepath="lib/org.eclipse.jface.databinding.source_1.5.0.I20100907-0800.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.ui.forms_3.5.200.v20120521-2329.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.swt.gtk.linux.x86_64_3.100.0.v4233d.jar" sourcepath="lib/org.eclipse.swt.gtk.linux.x86_64.source_3.100.0.v4233d.jar"/>
-	<classpathentry kind="lib" path="lib/com.ibm.icu_4.2.1.v20100412.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.core.databinding.property_1.4.0.I20110222-0800.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
