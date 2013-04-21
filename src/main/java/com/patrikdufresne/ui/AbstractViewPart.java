@@ -1,6 +1,17 @@
-/*
- * Copyright (c) 2011, Patrik Dufresne. All rights reserved.
- * Patrik Dufresne PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+/**
+ * Copyright(C) 2013 Patrik Dufresne Service Logiciel <info@patrikdufresne.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.patrikdufresne.ui;
 
@@ -47,307 +58,290 @@ import com.patrikdufresne.ui.ViewPart;
  */
 public abstract class AbstractViewPart extends ViewPart {
 
-	/**
-	 * Create a new SashForm handling the restore and save process of the
-	 * preferred weight.
-	 * 
-	 * @param parent
-	 *            the parent composite
-	 * @param style
-	 *            the sash form style. Either SWT.VERTICAL or SWT.HORIZONTAL
-	 * @param preferenceStore
-	 *            the preference store. Can't be null.
-	 * @param prefKey
-	 *            the preference key. Can't be null
-	 * @param defaultWeights
-	 *            the default weights
-	 * @return the sash form
-	 */
-	public static SashForm createSashForm(Composite parent, int style,
-			final IPreferenceStore preferenceStore, final String prefKey,
-			final int[] defaultWeights) {
-		if (preferenceStore == null || prefKey == null) {
-			throw new NullPointerException();
-		}
-		final SashForm sash = new SashForm(parent, style);
+    /**
+     * Create a new SashForm handling the restore and save process of the
+     * preferred weight.
+     * 
+     * @param parent
+     *            the parent composite
+     * @param style
+     *            the sash form style. Either SWT.VERTICAL or SWT.HORIZONTAL
+     * @param preferenceStore
+     *            the preference store. Can't be null.
+     * @param prefKey
+     *            the preference key. Can't be null
+     * @param defaultWeights
+     *            the default weights
+     * @return the sash form
+     */
+    public static SashForm createSashForm(Composite parent, int style, final IPreferenceStore preferenceStore, final String prefKey, final int[] defaultWeights) {
+        if (preferenceStore == null || prefKey == null) {
+            throw new NullPointerException();
+        }
+        final SashForm sash = new SashForm(parent, style);
 
-		// Restore weights from preferences
-		sash.addListener(SWT.Resize, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				PreferenceConverter.setDefault(preferenceStore, prefKey,
-						defaultWeights);
-				int[] weights = PreferenceConverter.getIntArray(preferenceStore,
-						prefKey);
-				if (weights.length == sash.getWeights().length) {
-					sash.setWeights(weights);
-				}
+        // Restore weights from preferences
+        sash.addListener(SWT.Resize, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                PreferenceConverter.setDefault(preferenceStore, prefKey, defaultWeights);
+                int[] weights = PreferenceConverter.getIntArray(preferenceStore, prefKey);
+                if (weights.length == sash.getWeights().length) {
+                    sash.setWeights(weights);
+                }
 
-				sash.removeListener(SWT.Resize, this);
-			}
-		});
+                sash.removeListener(SWT.Resize, this);
+            }
+        });
 
-		// Save sash weights
-		sash.addListener(SWT.Dispose, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				PreferenceConverter.setValue(preferenceStore, prefKey,
-						((SashForm) event.widget).getWeights());
-			}
-		});
+        // Save sash weights
+        sash.addListener(SWT.Dispose, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                PreferenceConverter.setValue(preferenceStore, prefKey, ((SashForm) event.widget).getWeights());
+            }
+        });
 
-		return sash;
+        return sash;
 
-	}
+    }
 
-	/**
-	 * Create a table viewer.
-	 * 
-	 * @param parent
-	 * @return
-	 */
-	public static TableViewer createTableViewer(Composite parent) {
-		return createTableViewer(parent, SWT.NONE);
-	}
+    /**
+     * Create a table viewer.
+     * 
+     * @param parent
+     * @return
+     */
+    public static TableViewer createTableViewer(Composite parent) {
+        return createTableViewer(parent, SWT.NONE);
+    }
 
-	/**
-	 * Create a table viewer with default editor activation event and traversal.
-	 * The table widget is create with the following style :
-	 * <code>SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION</code>
-	 * <p>
-	 * This function should be used to create a uniform table viewer in every
-	 * view.
-	 * 
-	 * @param parent
-	 *            the parent composite
-	 * 
-	 * @param style
-	 *            extra style for the table widget
-	 * 
-	 * @return the table viewer
-	 */
-	public static TableViewer createTableViewer(Composite parent, int style) {
-		// Create TableViewer
-		TableViewer viewer = new TableViewer(parent, style | SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
-		viewer.getTable().setHeaderVisible(true);
+    /**
+     * Create a table viewer with default editor activation event and traversal.
+     * The table widget is create with the following style :
+     * <code>SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION</code>
+     * <p>
+     * This function should be used to create a uniform table viewer in every
+     * view.
+     * 
+     * @param parent
+     *            the parent composite
+     * 
+     * @param style
+     *            extra style for the table widget
+     * 
+     * @return the table viewer
+     */
+    public static TableViewer createTableViewer(Composite parent, int style) {
+        // Create TableViewer
+        TableViewer viewer = new TableViewer(parent, style | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+        viewer.getTable().setHeaderVisible(true);
 
-		// Change the editor strategy
-		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
-				viewer) {
-			@Override
-			protected boolean isEditorActivationEvent(
-					ColumnViewerEditorActivationEvent event) {
-				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
-						|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-			}
-		};
-		TableViewerEditor.create(viewer, actSupport,
-				ColumnViewerEditor.TABBING_HORIZONTAL
-						| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-						| ColumnViewerEditor.TABBING_VERTICAL
-						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+        // Change the editor strategy
+        ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(viewer) {
+            @Override
+            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+                return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+                        || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+                        || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
+                        || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+            }
+        };
+        TableViewerEditor.create(viewer, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
+                | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+                | ColumnViewerEditor.TABBING_VERTICAL
+                | ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
-		return viewer;
-	}
+        return viewer;
+    }
 
-	/**
-	 * Create a table viewer.
-	 * 
-	 * @param parent
-	 * 
-	 * @return
-	 */
-	public static TreeViewer createTreeViewer(Composite parent) {
-		return createTreeViewer(parent, SWT.NONE);
-	}
+    /**
+     * Create a table viewer.
+     * 
+     * @param parent
+     * 
+     * @return
+     */
+    public static TreeViewer createTreeViewer(Composite parent) {
+        return createTreeViewer(parent, SWT.NONE);
+    }
 
-	/**
-	 * Create a tree viewer with default editor activation event and traversal.
-	 * The tree widget is create with the following style :
-	 * <code>SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION</code>
-	 * <p>
-	 * This function should be used to create a uniform table viewer in every
-	 * view.
-	 * 
-	 * @param parent
-	 *            the parent composite
-	 * 
-	 * @param style
-	 *            extra style for the tree widget
-	 * 
-	 * @return the tree viewer
-	 */
-	public static TreeViewer createTreeViewer(Composite parent, int style) {
-		// Create TableViewer
-		TreeViewer viewer = new TreeViewer(parent, style | SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
-		viewer.getTree().setHeaderVisible(true);
+    /**
+     * Create a tree viewer with default editor activation event and traversal.
+     * The tree widget is create with the following style :
+     * <code>SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION</code>
+     * <p>
+     * This function should be used to create a uniform table viewer in every
+     * view.
+     * 
+     * @param parent
+     *            the parent composite
+     * 
+     * @param style
+     *            extra style for the tree widget
+     * 
+     * @return the tree viewer
+     */
+    public static TreeViewer createTreeViewer(Composite parent, int style) {
+        // Create TableViewer
+        TreeViewer viewer = new TreeViewer(parent, style | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+        viewer.getTree().setHeaderVisible(true);
 
-		// Change the editor strategy
-		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
-				viewer) {
-			@Override
-			protected boolean isEditorActivationEvent(
-					ColumnViewerEditorActivationEvent event) {
-				return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-						|| event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-						|| (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
-						|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-			}
-		};
-		TreeViewerEditor.create(viewer, actSupport,
-				ColumnViewerEditor.TABBING_HORIZONTAL
-						| ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-						| ColumnViewerEditor.TABBING_VERTICAL
-						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+        // Change the editor strategy
+        ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(viewer) {
+            @Override
+            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
+                return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+                        || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
+                        || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
+                        || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+            }
+        };
+        TreeViewerEditor.create(viewer, actSupport, ColumnViewerEditor.TABBING_HORIZONTAL
+                | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+                | ColumnViewerEditor.TABBING_VERTICAL
+                | ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
-		return viewer;
-	}
+        return viewer;
+    }
 
-	private DataBindingContext dbc;
+    private DataBindingContext dbc;
 
-	/**
-	 * Pattern used for filtering.
-	 */
-	IObservableValue filterPattern;
+    /**
+     * Pattern used for filtering.
+     */
+    IObservableValue filterPattern;
 
-	/**
-	 * Observable manager.
-	 */
-	private ObservablesManager om;
+    /**
+     * Observable manager.
+     */
+    private ObservablesManager om;
 
-	/**
-	 * Create a new view-part.
-	 * 
-	 * @param id
-	 *            the part id
-	 */
-	public AbstractViewPart(String id) {
-		super(id);
-	}
+    /**
+     * Create a new view-part.
+     * 
+     * @param id
+     *            the part id
+     */
+    public AbstractViewPart(String id) {
+        super(id);
+    }
 
-	/**
-	 * 
-	 */
-	protected void bind() {
-		this.dbc = new DataBindingContext();
-		this.om = new ObservablesManager();
-		this.om.runAndCollect(new Runnable() {
-			@Override
-			public void run() {
-				bindValues();
-			}
-		});
-		this.om.addObservablesFromContext(this.dbc, true, true);
-	}
+    /**
+     * 
+     */
+    protected void bind() {
+        this.dbc = new DataBindingContext();
+        this.om = new ObservablesManager();
+        this.om.runAndCollect(new Runnable() {
+            @Override
+            public void run() {
+                bindValues();
+            }
+        });
+        this.om.addObservablesFromContext(this.dbc, true, true);
+    }
 
-	protected void bindValues() {
-		// Nothing to do
-	}
+    protected void bindValues() {
+        // Nothing to do
+    }
 
-	/**
-	 * Create a new contribution item to display a text filter.
-	 * 
-	 * @return
-	 */
-	protected IContributionItem createTextFilterContributionItem() {
-		// Create a custom implementation of Control Contribution to contribute
-		// to a CoolBar.
-		return new ControlContribution("AbstractViewPart.filter") { //$NON-NLS-1$
+    /**
+     * Create a new contribution item to display a text filter.
+     * 
+     * @return
+     */
+    protected IContributionItem createTextFilterContributionItem() {
+        // Create a custom implementation of Control Contribution to contribute
+        // to a CoolBar.
+        return new ControlContribution("AbstractViewPart.filter") { //$NON-NLS-1$
 
-			@Override
-			protected Control createControl(Composite parent) {
+            @Override
+            protected Control createControl(Composite parent) {
 
-				// Create a composite to adapt the size of the text zone.
-				Composite comp = new Composite(parent, SWT.NONE);
-				comp.setLayoutData(new RowData());
-				GridLayout layout = new GridLayout(1, false);
-				layout.marginHeight = 0;
-				layout.marginWidth = 5;
-				comp.setLayout(layout);
+                // Create a composite to adapt the size of the text zone.
+                Composite comp = new Composite(parent, SWT.NONE);
+                comp.setLayoutData(new RowData());
+                GridLayout layout = new GridLayout(1, false);
+                layout.marginHeight = 0;
+                layout.marginWidth = 5;
+                comp.setLayout(layout);
 
-				// Create the widget.
-				Text textFilter = new Text(comp, SWT.SINGLE | SWT.BORDER);
-				textFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-						true, true));
+                // Create the widget.
+                Text textFilter = new Text(comp, SWT.SINGLE | SWT.BORDER);
+                textFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 
-				// Bind the widget with the pattern.
-				getDbc().bindValue(
-						WidgetProperties.text(SWT.Modify).observe(textFilter),
-						AbstractViewPart.this.filterPattern);
+                // Bind the widget with the pattern.
+                getDbc().bindValue(WidgetProperties.text(SWT.Modify).observe(textFilter), AbstractViewPart.this.filterPattern);
 
-				return comp;
+                return comp;
 
-			}
-		};
-	}
+            }
+        };
+    }
 
-	@Override
-	public void deactivate() {
-		try {
-			if (this.om != null) {
-				this.om.dispose();
-				this.om = null;
-			}
-			if (this.dbc != null) {
-				this.dbc.dispose();
-				this.dbc = null;
-			}
-			if (this.filterPattern != null) {
-				this.filterPattern.dispose();
-				this.filterPattern = null;
-			}
-		} finally {
-			super.deactivate();
-		}
-	}
+    @Override
+    public void deactivate() {
+        try {
+            if (this.om != null) {
+                this.om.dispose();
+                this.om = null;
+            }
+            if (this.dbc != null) {
+                this.dbc.dispose();
+                this.dbc = null;
+            }
+            if (this.filterPattern != null) {
+                this.filterPattern.dispose();
+                this.filterPattern = null;
+            }
+        } finally {
+            super.deactivate();
+        }
+    }
 
-	/**
-	 * This function may be called by subclasses to add a text filter to the
-	 * toolbar.
-	 */
-	protected void fillToolbarWithTextFilter() {
-		// Set a value to pattern.
-		if (this.filterPattern == null) {
-			this.filterPattern = new WritableValue(null, String.class);
+    /**
+     * This function may be called by subclasses to add a text filter to the
+     * toolbar.
+     */
+    protected void fillToolbarWithTextFilter() {
+        // Set a value to pattern.
+        if (this.filterPattern == null) {
+            this.filterPattern = new WritableValue(null, String.class);
 
-			// Add text filter to cool bar.
-			getSite().getToolBarManager().add(
-					createTextFilterContributionItem());
-		}
+            // Add text filter to cool bar.
+            getSite().getToolBarManager().add(createTextFilterContributionItem());
+        }
 
-	}
+    }
 
-	/**
-	 * Create a filtered observable set with the filter pattern.
-	 * 
-	 * @param set
-	 * 
-	 * @return
-	 */
-	protected IObservableSet filter(IObservableSet set, IConverter converter) {
-		// Add a text filter
-		if (this.filterPattern == null) {
-			throw new RuntimeException("filterPattern is not created."); //$NON-NLS-1$
-		}
+    /**
+     * Create a filtered observable set with the filter pattern.
+     * 
+     * @param set
+     * 
+     * @return
+     */
+    protected IObservableSet filter(IObservableSet set, IConverter converter) {
+        // Add a text filter
+        if (this.filterPattern == null) {
+            throw new RuntimeException("filterPattern is not created."); //$NON-NLS-1$
+        }
 
-		// Use the created pattern to create a filtered observable set.
-		return new FilteredObservableSet(set, this.filterPattern, converter);
-	}
+        // Use the created pattern to create a filtered observable set.
+        return new FilteredObservableSet(set, this.filterPattern, converter);
+    }
 
-	protected DataBindingContext getDbc() {
-		return this.dbc;
-	}
+    protected DataBindingContext getDbc() {
+        return this.dbc;
+    }
 
-	/**
-	 * Return the observables managers instance of this view part.
-	 * 
-	 * @return
-	 */
-	protected ObservablesManager getOm() {
-		return om;
-	}
+    /**
+     * Return the observables managers instance of this view part.
+     * 
+     * @return
+     */
+    protected ObservablesManager getOm() {
+        return om;
+    }
 }

@@ -1,3 +1,18 @@
+/**
+ * Copyright(C) 2013 Patrik Dufresne Service Logiciel <info@patrikdufresne.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.patrikdufresne.ui;
 
 import org.eclipse.swt.graphics.Image;
@@ -40,92 +55,92 @@ import org.eclipse.swt.widgets.Composite;
  */
 public interface IViewPart {
 
-	/**
-	 * Active the view part. At this point, the view part was initialized with a
-	 * view site.
-	 * <p>
-	 * For implementors this is a multi-step process:
-	 * <ol>
-	 * <li>Create one or more controls within the given parent.</li>
-	 * <li>Set the parent layout as needed.</li>
-	 * <li>Register actions with the site's toolbar.</li>
-	 * </ol>
-	 * 
-	 * @param parent
-	 *            the parent control
-	 */
-	void activate(Composite parent);
+    /**
+     * Active the view part. At this point, the view part was initialized with a
+     * view site.
+     * <p>
+     * For implementors this is a multi-step process:
+     * <ol>
+     * <li>Create one or more controls within the given parent.</li>
+     * <li>Set the parent layout as needed.</li>
+     * <li>Register actions with the site's toolbar.</li>
+     * </ol>
+     * 
+     * @param parent
+     *            the parent control
+     */
+    void activate(Composite parent);
 
-	/**
-	 * Release allocated resource when the part was activate.
-	 * <p>
-	 * At this point the part controls have been disposed as part of an SWT
-	 * composite.
-	 * 
-	 */
-	void deactivate();
+    /**
+     * Release allocated resource when the part was activate.
+     * <p>
+     * At this point the part controls have been disposed as part of an SWT
+     * composite.
+     * 
+     */
+    void deactivate();
 
-	/**
-	 * Release all resource.
-	 * <p>
-	 * This is the last method called. At this point the view part as been
-	 * deactivated (if it was ever activate).
-	 * <p>
-	 * Within this method a part may release any resources, fonts, images, etc.
-	 * held by this part.
-	 */
-	void dispose();
+    /**
+     * Release all resource.
+     * <p>
+     * This is the last method called. At this point the view part as been
+     * deactivated (if it was ever activate).
+     * <p>
+     * Within this method a part may release any resources, fonts, images, etc.
+     * held by this part.
+     */
+    void dispose();
 
-	/**
-	 * Returns the part id.
-	 * 
-	 * @return the id
-	 */
-	String getId();
+    /**
+     * Returns the part id.
+     * 
+     * @return the id
+     */
+    String getId();
 
-	/**
-	 * Returns the site for this view.
-	 * 
-	 * @return the view site; this value may be null if the view has not yet
-	 *         been initialized
-	 */
-	IViewSite getSite();
+    /**
+     * Returns the site for this view.
+     * 
+     * @return the view site; this value may be null if the view has not yet
+     *         been initialized
+     */
+    IViewSite getSite();
 
-	/**
-	 * Returns the title of this part.
-	 * 
-	 * @return the part title
-	 */
-	String getTitle();
+    /**
+     * Returns the title of this part.
+     * 
+     * @return the part title
+     */
+    String getTitle();
 
-	/**
-	 * Returns the title image of this part. The title image is usually used to
-	 * populate the title bar of this part's visual container. Since this image
-	 * is managed by the part itself, callers must not dispose the returned
-	 * image.
-	 * 
-	 * @return the title image
-	 */
-	Image getTitleImage();
+    /**
+     * Returns the title image of this part. The title image is usually used to
+     * populate the title bar of this part's visual container. Since this image
+     * is managed by the part itself, callers must not dispose the returned
+     * image.
+     * 
+     * @return the title image
+     */
+    Image getTitleImage();
 
-	/**
-	 * Returns the title tool tip text of this workbench part. An empty string
-	 * result indicates no tool tip. The tool tip text is used to populate the
-	 * title bar of this part's visual container.
-	 * 
-	 * @return the part title tool tip
-	 */
-	String getTitleToolTip();
+    /**
+     * Returns the title tool tip text of this workbench part. An empty string
+     * result indicates no tool tip. The tool tip text is used to populate the
+     * title bar of this part's visual container.
+     * 
+     * @return the part title tool tip
+     */
+    String getTitleToolTip();
 
-	/**
-	 * Initializes this view with the given view site.
-	 * <p>
-	 * This method is automatically called shortly after the part is
-	 * instantiated. It marks the start of the views's lifecycle.
-	 * 
-	 * @param site
-	 *            the view site
-	 */
-	void init(IViewSite site);
+    /**
+     * Initializes this view with the given view site.
+     * <p>
+     * This method is automatically called shortly after the part is
+     * instantiated. It marks the start of the views's lifecycle.
+     * 
+     * @param site
+     *            the view site
+     */
+    void init(IViewSite site);
 
 }

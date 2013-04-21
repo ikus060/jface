@@ -1,3 +1,18 @@
+/**
+ * Copyright(C) 2013 Patrik Dufresne Service Logiciel <info@patrikdufresne.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /*
 NaturalOrderComparator.java -- Perform 'natural order' comparisons of strings in Java.
 Copyright (C) 2003 by Pierre-Luc Paour <natorder@paour.com>
@@ -33,128 +48,127 @@ import java.util.Comparator;
  */
 public class HumanNaturalComparator implements Comparator<String> {
 
-	/**
-	 * Protected constructor for singleton.
-	 */
-	protected HumanNaturalComparator() {
+    /**
+     * Protected constructor for singleton.
+     */
+    protected HumanNaturalComparator() {
 
-	}
+    }
 
-	/** The singleton instance. */
-	private static final HumanNaturalComparator instance = new HumanNaturalComparator();
+    /** The singleton instance. */
+    private static final HumanNaturalComparator instance = new HumanNaturalComparator();
 
-	// -----------------------------------------------------------------------
-	/**
-	 * Gets the singleton instance of a HumanNaturalComparator.
-	 * <p>
-	 * Developers are encouraged to use the comparator returned from this method
-	 * instead of constructing a new instance to reduce allocation and GC
-	 * overhead when multiple comparable comparators may be used in the same VM.
-	 * 
-	 * @return the singleton HumanNaturalComparator
-	 */
-	public static HumanNaturalComparator getInstance() {
-		return instance;
-	}
+    // -----------------------------------------------------------------------
+    /**
+     * Gets the singleton instance of a HumanNaturalComparator.
+     * <p>
+     * Developers are encouraged to use the comparator returned from this method
+     * instead of constructing a new instance to reduce allocation and GC
+     * overhead when multiple comparable comparators may be used in the same VM.
+     * 
+     * @return the singleton HumanNaturalComparator
+     */
+    public static HumanNaturalComparator getInstance() {
+        return instance;
+    }
 
-	private static char charAt(String s, int i) {
-		if (i >= s.length()) {
-			return 0;
-		}
-		return s.charAt(i);
-	}
+    private static char charAt(String s, int i) {
+        if (i >= s.length()) {
+            return 0;
+        }
+        return s.charAt(i);
+    }
 
-	private static int compareRight(String a, String b) {
-		int bias = 0;
-		int ia = 0;
-		int ib = 0;
+    private static int compareRight(String a, String b) {
+        int bias = 0;
+        int ia = 0;
+        int ib = 0;
 
-		// The longest run of digits wins. That aside, the greatest
-		// value wins, but we can't know that it will until we've scanned
-		// both numbers to know that they have the same magnitude, so we
-		// remember it in BIAS.
-		for (;; ia++, ib++) {
-			char ca = charAt(a, ia);
-			char cb = charAt(b, ib);
+        // The longest run of digits wins. That aside, the greatest
+        // value wins, but we can't know that it will until we've scanned
+        // both numbers to know that they have the same magnitude, so we
+        // remember it in BIAS.
+        for (;; ia++, ib++) {
+            char ca = charAt(a, ia);
+            char cb = charAt(b, ib);
 
-			if (!Character.isDigit(ca) && !Character.isDigit(cb)) {
-				return bias;
-			} else if (!Character.isDigit(ca)) {
-				return -1;
-			} else if (!Character.isDigit(cb)) {
-				return +1;
-			} else if (ca < cb) {
-				if (bias == 0) {
-					bias = -1;
-				}
-			} else if (ca > cb) {
-				if (bias == 0)
-					bias = +1;
-			} else if (ca == 0 && cb == 0) {
-				return bias;
-			}
-		}
-	}
+            if (!Character.isDigit(ca) && !Character.isDigit(cb)) {
+                return bias;
+            } else if (!Character.isDigit(ca)) {
+                return -1;
+            } else if (!Character.isDigit(cb)) {
+                return +1;
+            } else if (ca < cb) {
+                if (bias == 0) {
+                    bias = -1;
+                }
+            } else if (ca > cb) {
+                if (bias == 0) bias = +1;
+            } else if (ca == 0 && cb == 0) {
+                return bias;
+            }
+        }
+    }
 
-	@Override
-	public int compare(String a, String b) {
+    @Override
+    public int compare(String a, String b) {
 
-		int ia = 0, ib = 0;
-		int nza = 0, nzb = 0;
-		char ca, cb;
-		int result;
+        int ia = 0, ib = 0;
+        int nza = 0, nzb = 0;
+        char ca, cb;
+        int result;
 
-		while (true) {
-			// only count the number of zeroes leading the last number compared
-			nza = nzb = 0;
+        while (true) {
+            // only count the number of zeroes leading the last number compared
+            nza = nzb = 0;
 
-			ca = charAt(a, ia);
-			cb = charAt(b, ib);
+            ca = charAt(a, ia);
+            cb = charAt(b, ib);
 
-			// skip over leading spaces or zeros
-			while (Character.isSpaceChar(ca) || ca == '0') {
-				if (ca == '0') {
-					nza++;
-				} else {
-					// only count consecutive zeroes
-					nza = 0;
-				}
+            // skip over leading spaces or zeros
+            while (Character.isSpaceChar(ca) || ca == '0') {
+                if (ca == '0') {
+                    nza++;
+                } else {
+                    // only count consecutive zeroes
+                    nza = 0;
+                }
 
-				ca = charAt(a, ++ia);
-			}
+                ca = charAt(a, ++ia);
+            }
 
-			while (Character.isSpaceChar(cb) || cb == '0') {
-				if (cb == '0') {
-					nzb++;
-				} else {
-					// only count consecutive zeroes
-					nzb = 0;
-				}
+            while (Character.isSpaceChar(cb) || cb == '0') {
+                if (cb == '0') {
+                    nzb++;
+                } else {
+                    // only count consecutive zeroes
+                    nzb = 0;
+                }
 
-				cb = charAt(b, ++ib);
-			}
+                cb = charAt(b, ++ib);
+            }
 
-			// process run of digits
-			if (Character.isDigit(ca) && Character.isDigit(cb)) {
-				if ((result = compareRight(a.substring(ia), b.substring(ib))) != 0) {
-					return result;
-				}
-			}
+            // process run of digits
+            if (Character.isDigit(ca) && Character.isDigit(cb)) {
+                if ((result = compareRight(a.substring(ia), b.substring(ib))) != 0) {
+                    return result;
+                }
+            }
 
-			if (ca == 0 && cb == 0) {
-				// The strings compare the same. Perhaps the caller
-				// will want to call strcmp to break the tie.
-				return nza - nzb;
-			}
+            if (ca == 0 && cb == 0) {
+                // The strings compare the same. Perhaps the caller
+                // will want to call strcmp to break the tie.
+                return nza - nzb;
+            }
 
-			if (ca < cb) {
-				return -1;
-			} else if (ca > cb) {
-				return +1;
-			}
+            if (ca < cb) {
+                return -1;
+            } else if (ca > cb) {
+                return +1;
+            }
 
-			++ia;
-			++ib;
-		}
-	}
+            ++ia;
+            ++ib;
+        }
+    }
 }

@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.patrikdufresne</groupId>
 	<artifactId>com.patrikdufresne.jface</artifactId>
-	<version>0.36</version>
+	<version>0.37-SNAPSHOT</version>
 	<!-- Custom repository for JFace stuff. -->
 	<repositories>
 		<repository>
-			<id>swt repo</id>
-			<url>file:///home/ikus060/workspace/swt-maven</url>
+			<id>patrikdufresne</id>
+			<url>http://patrikdufresne.com/common/export/master/repo</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -56,7 +56,73 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.mycila.maven-license-plugin
+										</groupId>
+										<artifactId>
+											maven-license-plugin
+										</artifactId>
+										<versionRange>
+											[1.9.0,)
+										</versionRange>
+										<goals>
+											<goal>format</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.googlecode.maven-java-formatter-plugin
+										</groupId>
+										<artifactId>
+											maven-java-formatter-plugin
+										</artifactId>
+										<versionRange>
+											[0.3.1,)
+										</versionRange>
+										<goals>
+											<goal>format</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
+			<!-- javac version to 1.6 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<!-- generate source package -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -68,6 +134,39 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<!-- Formatting -->
+			<plugin>
+				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+				<artifactId>maven-java-formatter-plugin</artifactId>
+				<version>0.3.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configFile>src/main/build-tools/formatter.xml</configFile>
+				</configuration>
+			</plugin>
+			<!-- Add license header -->
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<header>src/main/build-tools/license-header.txt</header>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
