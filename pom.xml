@@ -3,14 +3,26 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.patrikdufresne</groupId>
 	<artifactId>com.patrikdufresne.jface</artifactId>
-	<version>0.37</version>
+	<version>0.38-SNAPSHOT</version>
 	<!-- Custom repository for JFace stuff. -->
 	<repositories>
 		<repository>
 			<id>patrikdufresne</id>
-			<url>http://patrikdufresne.com/common/export/master/repo</url>
+			<url>http://patrikdufresne.com/maven2/repo/</url>
 		</repository>
 	</repositories>
+	<!-- Define the SCM used for developpement. This information is used by 
+		release:prepare -->
+	<scm>
+		<developerConnection>scm:git:ssh://gitosis@tintaglia.patrikdufresne.com/jface.git</developerConnection>
+	</scm>
+	<!-- Define the repository. Used by deploy:deploy -->
+	<distributionManagement>
+		<repository>
+			<id>patrikdufresne</id>
+			<url>scpexe://patrikdufresne.com/var/www/maven2/repo/</url>
+		</repository>
+	</distributionManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jface</groupId>
@@ -57,61 +69,14 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											com.mycila.maven-license-plugin
-										</groupId>
-										<artifactId>
-											maven-license-plugin
-										</artifactId>
-										<versionRange>
-											[1.9.0,)
-										</versionRange>
-										<goals>
-											<goal>format</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											com.googlecode.maven-java-formatter-plugin
-										</groupId>
-										<artifactId>
-											maven-java-formatter-plugin
-										</artifactId>
-										<versionRange>
-											[0.3.1,)
-										</versionRange>
-										<goals>
-											<goal>format</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+		<extensions>
+			<!-- Enabling the use of SSH -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<!-- javac version to 1.6 -->
 			<plugin>
