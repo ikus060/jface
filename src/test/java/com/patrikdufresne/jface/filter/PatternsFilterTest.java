@@ -22,6 +22,44 @@ import org.junit.Test;
 public class PatternsFilterTest {
 
     /**
+     * Check the select function to avoid selecting everything if the patterns are empty.
+     */
+    @Test
+    public void testSelect_WithEndingSpace() {
+
+        PatternsFilter filter = PatternsFilter.create(" This  ,  ,  test, pat duf, ");
+
+        // Exact matches
+        assertTrue(filter.select("This"));
+        assertFalse(filter.select("is"));
+        assertFalse(filter.select("a"));
+        assertTrue(filter.select("test"));
+
+        // Matches on one work
+        assertFalse(filter.select("Patrik"));
+        assertFalse(filter.select("Dufresne"));
+        assertTrue(filter.select("Patrik Dufresne"));
+        assertTrue(filter.select("Testing"));
+
+        // Matches on multiple word
+        assertTrue(filter.select("My super testing"));
+        assertTrue(filter.select("My super Testing"));
+
+        // Matche with unnormalized word
+        assertTrue(filter.select("something tést something "));
+        assertTrue(filter.select("something tèst something "));
+        assertTrue(filter.select("something têst something "));
+        assertTrue(filter.select("something tëst something "));
+
+        // Unmatches
+        assertFalse(filter.select("something"));
+
+        // With null
+        assertFalse(filter.select(null));
+
+    }
+
+    /**
      * Check the select function.
      */
     @Test

@@ -86,7 +86,9 @@ public class PatternsFilter extends ViewerFilter implements IFilter {
                     list.add(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.LITERAL));
                 }
             }
-            regexPatterns.add(list);
+            if (list.size() > 0) {
+                regexPatterns.add(list);
+            }
         }
         return regexPatterns;
     }
