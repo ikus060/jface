@@ -42,6 +42,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
+import com.patrikdufresne.jface.filter.PatternsFilter;
+
 // TODO Delete this viewer.
 public class TextProposalViewer extends ContentViewer {
 
@@ -80,8 +82,8 @@ public class TextProposalViewer extends ContentViewer {
     }
 
     /**
-     * Asserts that the given array of elements is itself non- <code>null</code>
-     * and contains no <code>null</code> elements.
+     * Asserts that the given array of elements is itself non- <code>null</code> and contains no <code>null</code>
+     * elements.
      * 
      * @param elements
      *            the array to check
@@ -127,20 +129,17 @@ public class TextProposalViewer extends ContentViewer {
     private Text text;
 
     /**
-     * Returns the filtered array of children of the given element. The
-     * resulting array must not be modified, as it may come directly from the
-     * model's internal state.
+     * Returns the filtered array of children of the given element. The resulting array must not be modified, as it may
+     * come directly from the model's internal state.
      * 
      * @param parent
      *            the parent element
      * @return a filtered array of child elements
      */
     /*
-     * protected Object[] getFilteredChildren(Object parent) { Object[] result =
-     * getRawChildren(parent); if (filters != null) { for (Iterator iter =
-     * filters.iterator(); iter.hasNext();) { ViewerFilter f = (ViewerFilter)
-     * iter.next(); result = f.filter(this, parent, result); } } return result;
-     * }
+     * protected Object[] getFilteredChildren(Object parent) { Object[] result = getRawChildren(parent); if (filters !=
+     * null) { for (Iterator iter = filters.iterator(); iter.hasNext();) { ViewerFilter f = (ViewerFilter) iter.next();
+     * result = f.filter(this, parent, result); } } return result; }
      */
 
     public TextProposalViewer(Composite parent) {
@@ -152,29 +151,24 @@ public class TextProposalViewer extends ContentViewer {
     }
 
     /**
-     * Determines whether a change to the given property of the given element
-     * would require refiltering and/or resorting.
+     * Determines whether a change to the given property of the given element would require refiltering and/or
+     * resorting.
      * <p>
-     * This method is internal to the framework; subclassers should not call
-     * this method.
+     * This method is internal to the framework; subclassers should not call this method.
      * </p>
      * 
      * @param object
      *            the element
      * @param property
      *            the property
-     * @return <code>true</code> if refiltering is required, and
-     *         <code>false</code> otherwise
+     * @return <code>true</code> if refiltering is required, and <code>false</code> otherwise
      */
     /*
-     * protected boolean needsRefilter(Object element, String property) { if
-     * (sorter != null && sorter.isSorterProperty(element, property)) { return
-     * true; }
+     * protected boolean needsRefilter(Object element, String property) { if (sorter != null &&
+     * sorter.isSorterProperty(element, property)) { return true; }
      * 
-     * if (filters != null) { for (int i = 0, n = filters.size(); i < n; ++i) {
-     * ViewerFilter filter = (ViewerFilter) filters.get(i); if
-     * (filter.isFilterProperty(element, property)) { return true; } } } return
-     * false; }
+     * if (filters != null) { for (int i = 0, n = filters.size(); i < n; ++i) { ViewerFilter filter = (ViewerFilter)
+     * filters.get(i); if (filter.isFilterProperty(element, property)) { return true; } } } return false; }
      */
 
     public TextProposalViewer(Text text) {
@@ -202,9 +196,8 @@ public class TextProposalViewer extends ContentViewer {
     }
 
     /**
-     * Returns the filtered array of children of the given element. The
-     * resulting array must not be modified, as it may come directly from the
-     * model's internal state.
+     * Returns the filtered array of children of the given element. The resulting array must not be modified, as it may
+     * come directly from the model's internal state.
      * 
      * @param parent
      *            the parent element
@@ -225,8 +218,7 @@ public class TextProposalViewer extends ContentViewer {
      * @return boolean
      */
     /*
-     * protected boolean hasFilters() { return filters != null && filters.size()
-     * > 0; }
+     * protected boolean hasFilters() { return filters != null && filters.size() > 0; }
      */
 
     protected Image getLabelProviderImage(Object element) {
@@ -241,30 +233,15 @@ public class TextProposalViewer extends ContentViewer {
         if (!(getLabelProvider() instanceof ILabelProvider)) {
             return new IContentProposal[0];
         }
-        // Create a regex pattern for filtering
-        String[] strings = contents.split(" "); //$NON-NLS-1$
-        final Pattern patterns[] = new Pattern[strings.length];
-        for (int i = 0; i < strings.length; i++) {
-            strings[i] = normalizeString(strings[i]);
-            patterns[i] = Pattern.compile(".*" + strings[i] + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
-        }
 
         // Create the filter
-        ViewerFilter filter = new ViewerFilter() {
+        ViewerFilter filter = new PatternsFilter(PatternsFilter.createPatterns(contents)) {
+
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
-                if (patterns.length == 0) {
-                    return true;
-                }
-                String string = getLabelProviderText(element);
-                string = normalizeString(string);
-                int i = 0;
-                while (i < patterns.length && patterns[i].matcher(string).matches()) {
-                    i++;
-                }
-                if (i < patterns.length) return false;
-                return true;
+                return super.select(viewer, parentElement, getLabelProviderText(element));
             }
+
         };
 
         // Retrieve a list of elements from the filtered content provider
@@ -279,9 +256,8 @@ public class TextProposalViewer extends ContentViewer {
     }
 
     /**
-     * Returns the children of the given parent without sorting and filtering
-     * them. The resulting array must not be modified, as it may come directly
-     * from the model's internal state.
+     * Returns the children of the given parent without sorting and filtering them. The resulting array must not be
+     * modified, as it may come directly from the model's internal state.
      * <p>
      * Returns an empty array if the given parent is <code>null</code>.
      * </p>
@@ -311,9 +287,8 @@ public class TextProposalViewer extends ContentViewer {
     }
 
     /**
-     * Returns the sorted and filtered set of children of the given element. The
-     * resulting array must not be modified, as it may come directly from the
-     * model's internal state.
+     * Returns the sorted and filtered set of children of the given element. The resulting array must not be modified,
+     * as it may come directly from the model's internal state.
      * 
      * @param parent
      *            the parent element
@@ -351,27 +326,14 @@ public class TextProposalViewer extends ContentViewer {
         return new ContentProposal(element);
     }
 
-    /**
-     * Remove weird character.
-     * 
-     * @param string
-     *            the input string
-     * @return the string without weird character
-     */
-    protected String normalizeString(String string) {
-        String temp = Normalizer.normalize(string, Normalizer.Form.NFD);
-        return temp.replaceAll("[^\\p{ASCII}]", ""); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
     @Override
     public void refresh() {
         // TODO
     }
 
     /**
-     * Sets this viewer's comparator to be used for sorting elements, and
-     * triggers refiltering and resorting of this viewer's element.
-     * <code>null</code> turns sorting off.
+     * Sets this viewer's comparator to be used for sorting elements, and triggers refiltering and resorting of this
+     * viewer's element. <code>null</code> turns sorting off.
      * 
      * @param comparator
      *            a viewer comparator, or <code>null</code> if none
