@@ -129,4 +129,78 @@ public class FilteredObservableSetTest {
 
     }
 
+    /**
+     * Check if the filtering is working as expected.
+     */
+    @Test
+    public void testFiltering_WithSetChangeWithPatterns() {
+        // Create the filter observable set
+        WritableSet set = new WritableSet(new HashSet<String>(), String.class);
+        set.add("Patrik Dufresne");
+        set.add("Nicole Daoust");
+        set.add("Michel Roy");
+        set.add("Luc Fortin");
+        WritableValue patterns = new WritableValue("Pat, For", String.class);
+        FilteredObservableSet filter = new FilteredObservableSet(set, patterns, new SelfValueProperty(String.class));
+
+        // Check data
+        assertEquals(2, filter.size());
+        HashSet<String> filteredSet = new HashSet<String>(filter);
+        assertTrue(filteredSet.contains("Patrik Dufresne"));
+        assertTrue(filteredSet.contains("Luc Fortin"));
+
+        // Change patterns
+        set.remove("Luc Fortin");
+        set.remove("Michel Roy");
+        set.add("Coucou bobo");
+        set.add("Patrice Legeault");
+        set.add("Formation");
+
+        // Check data
+        assertEquals(3, filter.size());
+        filteredSet = new HashSet<String>(filter);
+        assertTrue(filteredSet.contains("Patrik Dufresne"));
+        assertTrue(filteredSet.contains("Patrice Legeault"));
+        assertTrue(filteredSet.contains("Formation"));
+
+    }
+
+    /**
+     * Check if the filtering is working as expected.
+     */
+    @Test
+    public void testFiltering_WithSetChangeWithoutPatterns() {
+        // Create the filter observable set
+        WritableSet set = new WritableSet(new HashSet<String>(), String.class);
+        set.add("Patrik Dufresne");
+        set.add("Nicole Daoust");
+        set.add("Michel Roy");
+        set.add("Luc Fortin");
+        WritableValue patterns = new WritableValue("", String.class);
+        FilteredObservableSet filter = new FilteredObservableSet(set, patterns, new SelfValueProperty(String.class));
+
+        // Check data
+        assertEquals(4, filter.size());
+        HashSet<String> filteredSet = new HashSet<String>(filter);
+        assertTrue(filteredSet.contains("Patrik Dufresne"));
+        assertTrue(filteredSet.contains("Nicole Daoust"));
+        assertTrue(filteredSet.contains("Michel Roy"));
+        assertTrue(filteredSet.contains("Luc Fortin"));
+
+        // Change patterns
+        set.remove("Luc Fortin");
+        set.remove("Michel Roy");
+        set.add("Patrice Legeault");
+        set.add("Formation");
+
+        // Check data
+        assertEquals(4, filter.size());
+        filteredSet = new HashSet<String>(filter);
+        assertTrue(filteredSet.contains("Patrik Dufresne"));
+        assertTrue(filteredSet.contains("Nicole Daoust"));
+        assertTrue(filteredSet.contains("Patrice Legeault"));
+        assertTrue(filteredSet.contains("Formation"));
+
+    }
+
 }

@@ -191,7 +191,7 @@ public class FilteredObservableSet extends AbstractFilteredObservableSet {
      */
     @Override
     protected boolean doSelect(Object element) {
-        return ((IFilter) this.filter.getValue()).select(element);
+        return this.filter.getValue() instanceof IFilter ? ((IFilter) this.filter.getValue()).select(element) : true;
     }
 
     /**
