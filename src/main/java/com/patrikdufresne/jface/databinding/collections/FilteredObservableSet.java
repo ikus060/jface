@@ -16,6 +16,7 @@
 package com.patrikdufresne.jface.databinding.collections;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.databinding.conversion.IConverter;
@@ -25,6 +26,12 @@ import org.eclipse.core.databinding.observable.IStaleListener;
 import org.eclipse.core.databinding.observable.StaleEvent;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.property.value.IValueProperty;
+import org.eclipse.core.internal.databinding.ConverterValueProperty;
+import org.eclipse.jface.viewers.IFilter;
+
+import com.patrikdufresne.jface.databinding.value.ComputedObservableValue;
+import com.patrikdufresne.jface.filter.PatternsFilter;
 
 /**
  * Filter an observable set using a text filter.
@@ -60,62 +67,92 @@ public class FilteredObservableSet extends AbstractFilteredObservableSet {
     }
 
     /**
+     * Create an observable from the patterns and property.
+     * 
+     * @param patterns
+     *            the
+     * 
+     * @param property
+     * 
+     * @return
+     */
+    private static IObservableValue createObservableFilter(final IObservableValue patterns, final IValueProperty property) {
+        return new ComputedObservableValue(patterns) {
+            @Override
+            protected Object calculate() {
+                // Null filter if the patterns is empty.
+                if (!(patterns.getValue() instanceof String) || patterns.getValue().toString().trim().isEmpty()) {
+                    return null;
+                }
+                // Create the patterns filter.
+                List<List<Pattern>> list = PatternsFilter.createPatterns(((IObservableValue) patterns).getValue().toString());
+                if (property == null) {
+                    return new PatternsFilter(list);
+                }
+                return new PatternsFilter(list) {
+                    @Override
+                    public boolean select(Object toTest) {
+                        // Convert the original object using the given value property.
+                        return super.select(property.getValue(toTest));
+                    }
+                };
+
+            }
+        };
+    }
+
+    /**
+     * Observable filter.
+     */
+    private IObservableValue filter;
+
+    /**
      * Private listener
      */
     private PrivateInterface privateInterface = new PrivateInterface();
-
-    private static final String EMPTY = ""; //$NON-NLS-1$
-
-    private static final String SPACE = " "; //$NON-NLS-1$
-
-    /**
-     * The pattern use as a filter
-     */
-    private IObservableValue pattern;
-    /**
-     * The converter to convert element to string.
-     */
-    private IConverter converter;
-
-    private Pattern[] patterns;
 
     /**
      * Create an observable filter for the set specified.
      * 
      * @param set
      *            the observable set to filter
-     * @param pattern
-     *            the observable pattern
-     * @param converter
-     *            the converter or null
+     * @param filter
+     *            an observable on the filter to be used.
      */
-    public FilteredObservableSet(IObservableSet set, IObservableValue pattern, IConverter converter) {
+    protected FilteredObservableSet(IObservableSet set, IObservableValue filter) {
         super(set);
-        if (pattern == null) {
+        if (filter == null) {
             throw new IllegalArgumentException();
         }
-        this.pattern = pattern;
-        this.converter = converter;
-    }
-
-    public void patternChange() {
-        this.patterns = null;
-        makeDirty();
+        this.filter = filter;
     }
 
     /**
-     * Create an observable filter.
+     * Create a new patterns filter observable set.
      * 
-     * @param managers
-     *            the managers
      * @param set
-     *            the observable set to filter
-     * @param pattern
-     *            the pattern value
-     * 
+     *            the observable to be filtered
+     * @param patterns
+     *            the patterns (an observable string)
+     * @param converter
+     *            a converter to transforme the original element into the string to be filtered.
      */
-    public FilteredObservableSet(IObservableSet set, IObservableValue pattern) {
-        this(set, pattern, null);
+    public FilteredObservableSet(IObservableSet set, IObservableValue patterns, IConverter converter) {
+        this(set, createObservableFilter(patterns, new ConverterValueProperty(converter)));
+    }
+
+    /**
+     * Create a new patterns filter observable set.
+     * 
+     * @param set
+     *            the observable to be filtered
+     * @param patterns
+     *            the patterns (an observable string)
+     * @param property
+     *            the property value used for filtering.
+     */
+    public FilteredObservableSet(IObservableSet set, IObservableValue patterns, IValueProperty property) {
+        this(set, createObservableFilter(patterns, property));
     }
 
     /**
@@ -124,63 +161,23 @@ public class FilteredObservableSet extends AbstractFilteredObservableSet {
     @Override
     public synchronized void dispose() {
         super.dispose();
-        this.pattern = null;
-        this.converter = null;
+        this.filter = null;
     }
 
     /**
      * Query the database.
      * <p>
-     * Sub classes may override this function to query the database using
-     * something else then list().
+     * Sub classes may override this function to query the database using something else then list().
      * 
      * @return a collection
      */
     @Override
     protected Iterator doCompute() {
         // Return the current set iterator
-        if (getPattern() == null || getPattern().length() == 0) {
+        if (getFilter() == null) {
             return getInnerSet().iterator();
         }
         return super.doCompute();
-    }
-
-    /**
-     * Return the current pattern value or null if not set
-     * 
-     * @return
-     */
-    protected String getPattern() {
-        if (this.pattern.getValue() instanceof String) {
-            return (String) this.pattern.getValue();
-        }
-        return null;
-    }
-
-    /**
-     * Init alise the Filter
-     * 
-     * @param patternString
-     *            the pattern
-     */
-    protected Pattern[] compilePatterns(String patternString) {
-        if (patternString == null || patternString.equals("")) { //$NON-NLS-1$
-            return null;
-        }
-        String[] strings = patternString.replaceAll("[^a-zA-Z0-9àâäéèêëìîïòôöùûüỳŷÿç]", SPACE) //$NON-NLS-1$
-                .replaceAll("[aàâä]", "[aàâä]") //$NON-NLS-1$ //$NON-NLS-2$
-                .replaceAll("[cç]", "[cç]") //$NON-NLS-1$ //$NON-NLS-2$
-                .replaceAll("[eéèêë]", "[eéèêë]") //$NON-NLS-1$ //$NON-NLS-2$
-                .replaceAll("[iìîï]", "[iìîï]") //$NON-NLS-1$ //$NON-NLS-2$
-                .replaceAll("[oòôö]", "[oòôö]") //$NON-NLS-1$ //$NON-NLS-2$
-                .replaceAll("[uùûü]", "[uùûü]") //$NON-NLS-1$ //$NON-NLS-2$
-                .replaceAll("[yỳŷÿ]", "[yỳŷÿ]") //$NON-NLS-1$ //$NON-NLS-2$
-                .split(SPACE);
-        Pattern[] patterns = new Pattern[strings.length];
-        for (int i = 0; i < strings.length; i++) {
-            patterns[i] = Pattern.compile(".*" + strings[i] + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        return patterns;
     }
 
     /**
@@ -194,38 +191,23 @@ public class FilteredObservableSet extends AbstractFilteredObservableSet {
      */
     @Override
     protected boolean doSelect(Object element) {
-        // Compile the patterns
-        if (this.patterns == null || this.patterns.length == 0) {
-            this.patterns = compilePatterns(getPattern());
-            if (this.patterns == null || this.patterns.length == 0) {
-                return true;
-            }
-        }
-
-        // Filter
-        int i = 0;
-        while (i < this.patterns.length && this.patterns[i].matcher(toString(element)).matches()) {
-            i++;
-        }
-        if (i < this.patterns.length) return false;
-        return true;
+        return ((IFilter) this.filter.getValue()).select(element);
     }
 
     /**
-     * Convert the given element to a string representation using the convert is
-     * set or {@link #toString()}
+     * Return the current pattern value or null if not set
      * 
-     * @param element
      * @return
      */
-    protected String toString(Object element) {
-        if (element == null) {
-            return EMPTY;
+    protected IFilter getFilter() {
+        if (this.filter.getValue() instanceof IFilter) {
+            return (IFilter) this.filter.getValue();
         }
-        if (this.converter == null) {
-            return element.toString();
-        }
-        return this.converter.convert(element).toString();
+        return null;
+    }
+
+    public void patternChange() {
+        makeDirty();
     }
 
     /**
@@ -235,9 +217,9 @@ public class FilteredObservableSet extends AbstractFilteredObservableSet {
     @Override
     protected void startListening() {
         super.startListening();
-        if (this.pattern != null) {
-            this.pattern.addChangeListener(this.privateInterface);
-            this.pattern.addStaleListener(this.privateInterface);
+        if (this.filter != null) {
+            this.filter.addChangeListener(this.privateInterface);
+            this.filter.addStaleListener(this.privateInterface);
         }
     }
 
@@ -247,9 +229,9 @@ public class FilteredObservableSet extends AbstractFilteredObservableSet {
     @Override
     protected void stopListening() {
         super.stopListening();
-        if (this.pattern != null) {
-            this.pattern.removeChangeListener(this.privateInterface);
-            this.pattern.addStaleListener(this.privateInterface);
+        if (this.filter != null) {
+            this.filter.removeChangeListener(this.privateInterface);
+            this.filter.addStaleListener(this.privateInterface);
         }
     }
 }

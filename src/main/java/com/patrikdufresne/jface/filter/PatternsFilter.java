@@ -29,7 +29,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
 /**
- * 
+ * This implementation of {@link ViewerFilter} is filtering the elements using regular expression pattern matching with
+ * a combination of delimiters.
  * 
  * @author Patrik Dufresne
  * 
