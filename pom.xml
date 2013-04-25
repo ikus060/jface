@@ -7,7 +7,7 @@
 	<repositories>
 		<repository>
 			<id>patrikdufresne</id>
-			<url>http://patrikdufresne.com/maven2/repo/</url>
+			<url>http://nexus.patrikdufresne.com/content/repositories/public/</url>
 		</repository>
 	</repositories>
 	<!-- Define the SCM used for developpement. This information is used by 
@@ -19,8 +19,14 @@
 	<distributionManagement>
 		<repository>
 			<id>patrikdufresne</id>
-			<url>scpexe://patrikdufresne.com/var/www/maven2/repo/</url>
+			<name>Internal Releases</name>
+			<url>http://nexus.patrikdufresne.com/content/repositories/releases/</url>
 		</repository>
+		<snapshotRepository>
+			<id>patrikdufresne</id>
+			<name>Internal Releases</name>
+			<url>http://nexus.patrikdufresne.com/content/repositories/snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
 	<dependencies>
 		<dependency>
