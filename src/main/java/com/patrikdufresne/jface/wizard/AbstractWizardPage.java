@@ -21,8 +21,7 @@ import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.wizard.WizardPage;
 
 /**
- * This wizard page provide a default implementation including a data binding
- * context.
+ * This wizard page provide a default implementation including a data binding context.
  * 
  * @author Patrik Dufresne
  * 
@@ -36,6 +35,8 @@ public abstract class AbstractWizardPage extends WizardPage {
      */
     private ObservablesManager om;
 
+    protected WizardPageSupport wizardPageSupport;
+
     /**
      * Create a new wizard page.
      * 
@@ -47,8 +48,7 @@ public abstract class AbstractWizardPage extends WizardPage {
     }
 
     /**
-     * This function should be called without the createControls function to
-     * bind the widgets.
+     * This function should be called without the createControls function to bind the widgets.
      */
     protected void bind() {
         this.dbc = new DataBindingContext();
@@ -62,8 +62,6 @@ public abstract class AbstractWizardPage extends WizardPage {
         this.om.addObservablesFromContext(this.dbc, true, true);
         this.wizardPageSupport = WizardPageSupport.create(this, getDbc());
     }
-
-    protected WizardPageSupport wizardPageSupport;
 
     /**
      * Sub-classes should implement this function to bind the widgets.
@@ -96,8 +94,22 @@ public abstract class AbstractWizardPage extends WizardPage {
         }
     }
 
+    /**
+     * Return a reference to the databinding context.
+     * 
+     * @return
+     */
     protected DataBindingContext getDbc() {
         return this.dbc;
+    }
+
+    /**
+     * Return a reference on the observable manager.
+     * 
+     * @return
+     */
+    protected ObservablesManager getOm() {
+        return this.om;
     }
 
 }
