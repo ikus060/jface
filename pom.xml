@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.patrikdufresne</groupId>
 	<artifactId>com.patrikdufresne.jface</artifactId>
-	<version>0.41</version>
+	<version>0.42-SNAPSHOT</version>
 	<!-- Custom repository for JFace stuff. -->
 	<repositories>
 		<repository>
