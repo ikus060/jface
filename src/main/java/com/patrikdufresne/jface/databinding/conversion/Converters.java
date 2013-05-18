@@ -60,8 +60,7 @@ public class Converters {
     }
 
     /**
-     * Converter used to converter string into number using different
-     * NumberFormat instances..
+     * Converter used to converter string into number using different NumberFormat instances..
      * 
      * @author Patrik Dufresne
      * 
@@ -77,10 +76,10 @@ public class Converters {
         @Override
         public Object convert(Object fromObject) {
             // If the source is null, convert it to null or 0.
-            if (fromObject == null) {
-                return getToType() instanceof Class && ((Class) getToType()).isPrimitive() ? 0 : null;
+            String input;
+            if (fromObject == null || (input = fromObject.toString().trim()).isEmpty()) {
+                return getToType() instanceof Class && ((Class) getToType()).isPrimitive() ? typeCast(0) : null;
             }
-            String input = fromObject.toString();
             // Try to parse the string using the percent format
             for (NumberFormat format : formats) {
                 ParsePosition pos = new ParsePosition(0);
@@ -129,8 +128,7 @@ public class Converters {
     private static IConverter removeFrontNumber;
 
     /**
-     * Convert {@link BigDecimal} into a formated currency string using the
-     * default locale.
+     * Convert {@link BigDecimal} into a formated currency string using the default locale.
      * 
      * @return the converter
      */
@@ -139,8 +137,7 @@ public class Converters {
     }
 
     /**
-     * Convert {@link BigDecimal} into a formated currency string using the
-     * specified locale.
+     * Convert {@link BigDecimal} into a formated currency string using the specified locale.
      * 
      * @param locale
      *            the locale
@@ -151,8 +148,7 @@ public class Converters {
     }
 
     /**
-     * Convert a {@link BigDecimal} into a formated percentage string using the
-     * default locale.
+     * Convert a {@link BigDecimal} into a formated percentage string using the default locale.
      * 
      * @return the converter
      */
@@ -161,15 +157,12 @@ public class Converters {
     }
 
     /**
-     * Convert a {@link BigDecimal} into a formated percentage string using the
-     * default locale.
+     * Convert a {@link BigDecimal} into a formated percentage string using the default locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @return the converter
      */
     public static IConverter bigDecimalToPercent(int minDecimal, int maxDecimal) {
@@ -177,15 +170,12 @@ public class Converters {
     }
 
     /**
-     * Convert a {@link BigDecimal} into a formated percentage string using the
-     * specified locale.
+     * Convert a {@link BigDecimal} into a formated percentage string using the specified locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the specified locale
      * @return the converter
@@ -198,11 +188,9 @@ public class Converters {
      * Convert {@link BigDecimal} into a formated number using default locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @return the converter
      */
     public static IConverter bigDecimalToString(int minDecimal, int maxDecimal) {
@@ -210,15 +198,12 @@ public class Converters {
     }
 
     /**
-     * Convert {@link BigDecimal} into a formated number using the specified
-     * locale.
+     * Convert {@link BigDecimal} into a formated number using the specified locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the locale
      * @return the converter
@@ -252,8 +237,7 @@ public class Converters {
     }
 
     /**
-     * Create multiple number format from a given number format to support a
-     * wider range of string input.
+     * Create multiple number format from a given number format to support a wider range of string input.
      * 
      * @param currencyInstance
      * @return
@@ -272,8 +256,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transformed a formated string in a
-     * {@link BigDecimal} using the default locale.
+     * Return a converter to transformed a formated string in a {@link BigDecimal} using the default locale.
      * 
      * @return the converter
      */
@@ -282,8 +265,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a
-     * {@link BigDecimal} number using the specified locale.
+     * Return a converter to transform a formated string into a {@link BigDecimal} number using the specified locale.
      * 
      * @param locale
      *            the locale used for conversion.
@@ -294,8 +276,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated currency string into a float
-     * using default locale.
+     * Return a converter to transform a formated currency string into a float using default locale.
      * 
      * @return the converter
      */
@@ -304,8 +285,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a float using
-     * specified locale.
+     * Return a converter to transform a formated string into a float using specified locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
@@ -318,8 +298,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a Number using the
-     * specified locale.
+     * Return a converter to transform a formated string into a Number using the specified locale.
      * 
      * @param toType
      *            the target class type.
@@ -335,8 +314,7 @@ public class Converters {
     }
 
     /**
-     * Create a converter to convert a date into it's string representation.
-     * i.e.: 13 sep 2012.
+     * Create a converter to convert a date into it's string representation. i.e.: 13 sep 2012.
      * <p>
      * If the date value is null, an empty string is returned.
      * 
@@ -367,8 +345,7 @@ public class Converters {
     }
 
     /**
-     * Convert a float into a formated currency string using the specfiied
-     * locale.
+     * Convert a float into a formated currency string using the specfiied locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
@@ -381,8 +358,7 @@ public class Converters {
     }
 
     /**
-     * Convert a float into a formated percentage string using the default
-     * locale.
+     * Convert a float into a formated percentage string using the default locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
@@ -393,17 +369,14 @@ public class Converters {
     }
 
     /**
-     * Convert a float into a formated percentage string using the default
-     * locale.
+     * Convert a float into a formated percentage string using the default locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @return the converter
      */
     public static IConverter floatToPercent(boolean primitive, int minDecimal, int maxDecimal) {
@@ -411,17 +384,14 @@ public class Converters {
     }
 
     /**
-     * Convert a float into a formated percentage string using the specfiied
-     * locale.
+     * Convert a float into a formated percentage string using the specfiied locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the specified locale
      * @return the converter
@@ -459,17 +429,14 @@ public class Converters {
     }
 
     /**
-     * Convert a float into a formated percentage string using the specfiied
-     * locale.
+     * Convert a float into a formated percentage string using the specfiied locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the specified locale
      * @return the converter
@@ -482,8 +449,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a
-     * {@link BigDecimal} using default locale.
+     * Return a converter to transform a formated string into a {@link BigDecimal} using default locale.
      * 
      * @return the converter
      */
@@ -492,15 +458,12 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a
-     * {@link BigDecimal} using default locale.
+     * Return a converter to transform a formated string into a {@link BigDecimal} using default locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @return the converter
      */
     public static IConverter percentToBigDecimal(int minDecimal, int maxDecimal) {
@@ -508,15 +471,12 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a
-     * {@link BigDecimal} using default locale.
+     * Return a converter to transform a formated string into a {@link BigDecimal} using default locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the localed used for conversion.
      * @return the converter
@@ -526,8 +486,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a float using
-     * default locale.
+     * Return a converter to transform a formated string into a float using default locale.
      * 
      * @return the converter
      */
@@ -536,17 +495,14 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a float using
-     * default locale.
+     * Return a converter to transform a formated string into a float using default locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @return the converter
      */
     public static IConverter percentToFloat(boolean primitive, int minDecimal, int maxDecimal) {
@@ -554,18 +510,15 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a float using
-     * specified locale.
+     * Return a converter to transform a formated string into a float using specified locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the specified locale
      * @return the converter
@@ -575,17 +528,14 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a number using
-     * specified locale.
+     * Return a converter to transform a formated string into a number using specified locale.
      * 
      * @param toType
      *            the target class type.
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the specified locale
      * @return the converter
@@ -618,8 +568,8 @@ public class Converters {
     }
 
     /**
-     * Return a converter to remove the front number of the team or section's
-     * name. This function always return the same instance of the converter.
+     * Return a converter to remove the front number of the team or section's name. This function always return the same
+     * instance of the converter.
      * 
      * @return the converter.
      */
@@ -645,8 +595,7 @@ public class Converters {
     }
 
     /**
-     * Clone the given number format and remove the space from the prefix ans
-     * suffix.
+     * Clone the given number format and remove the space from the prefix ans suffix.
      * 
      * @param format
      *            the format
@@ -662,8 +611,7 @@ public class Converters {
     }
 
     /**
-     * Clone the given number format and reverse the decimal separator from
-     * comma to dot or from dot to comma.
+     * Clone the given number format and reverse the decimal separator from comma to dot or from dot to comma.
      * 
      * @param format
      *            the format
@@ -699,11 +647,9 @@ public class Converters {
      * Convert string into {@link BigDecimal}
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @return the converter
      */
     public static IConverter stringToBigDecimal(int minDecimal, int maxDecimal) {
@@ -714,11 +660,9 @@ public class Converters {
      * Convert string into {@link BigDecimal}
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the locale
      * @return the converter
@@ -751,8 +695,7 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a float using
-     * default locale.
+     * Return a converter to transform a formated string into a float using default locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
@@ -763,17 +706,14 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a float using
-     * default locale.
+     * Return a converter to transform a formated string into a float using default locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @return the converter
      */
     public static IConverter stringToFloat(boolean primitive, int minDecimal, int maxDecimal) {
@@ -781,17 +721,14 @@ public class Converters {
     }
 
     /**
-     * Return a converter to transform a formated string into a float using
-     * specified locale.
+     * Return a converter to transform a formated string into a float using specified locale.
      * 
      * @param primitive
      *            True to converter into primitive type.
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number
+     *            the minimum number of digits allowed in the fraction portion of a number
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number
+     *            the maximum number of digits allowed in the fraction portion of a number
      * @param locale
      *            the specified locale
      * @return the converter

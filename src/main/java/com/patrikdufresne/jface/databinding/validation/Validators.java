@@ -16,8 +16,6 @@
 package com.patrikdufresne.jface.databinding.validation;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Date;
@@ -27,7 +25,6 @@ import java.util.Locale;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.internal.databinding.BindingMessages;
-import org.eclipse.core.internal.databinding.validation.NumberFormatConverter;
 import org.eclipse.core.runtime.IStatus;
 
 import com.patrikdufresne.jface.databinding.conversion.Converters;
@@ -35,8 +32,7 @@ import com.patrikdufresne.jface.databinding.conversion.Converters;
 public class Validators {
 
     /**
-     * Validator used to check the format of an input string against multiple
-     * number format.
+     * Validator used to check the format of an input string against multiple number format.
      * 
      * @author Patrik Dufresne
      * 
@@ -51,10 +47,10 @@ public class Validators {
 
         @Override
         public IStatus validate(Object value) {
-            if (value == null) {
+            String input;
+            if (value == null || (input = value.toString().trim()).isEmpty()) {
                 return ValidationStatus.ok();
             }
-            String input = value.toString();
             // Try to parse the string using the percent format
             for (NumberFormat format : formats) {
                 ParsePosition pos = new ParsePosition(0);
@@ -70,8 +66,8 @@ public class Validators {
     protected static final String VALIDATE_NOT_NULL = "Validate_NotNull"; //$NON-NLS-1$
 
     /**
-     * Return a validator to check the format of a string previous to a
-     * conversion of a percent string using default locale.
+     * Return a validator to check the format of a string previous to a conversion of a percent string using default
+     * locale.
      * 
      * @return the validator
      */
@@ -80,10 +76,9 @@ public class Validators {
     }
 
     /**
-     * Return a validator to check the format of a string previous to a
-     * conversion of a currency string using the given locale. This validator
-     * use multiple number format to parse the input string. It tries to parse
-     * the string using different decimal separator : dot (.) or comma (,)
+     * Return a validator to check the format of a string previous to a conversion of a currency string using the given
+     * locale. This validator use multiple number format to parse the input string. It tries to parse the string using
+     * different decimal separator : dot (.) or comma (,)
      * 
      * @return the validator
      */
@@ -111,8 +106,7 @@ public class Validators {
     }
 
     /**
-     * Return a validator checking if the value is null. When null this
-     * validator return an error.
+     * Return a validator checking if the value is null. When null this validator return an error.
      * 
      * @return the validator.
      */
@@ -129,8 +123,8 @@ public class Validators {
     }
 
     /**
-     * Return a validator to check the format of a string previous to a
-     * conversion of a percent string using default locale.
+     * Return a validator to check the format of a string previous to a conversion of a percent string using default
+     * locale.
      * 
      * @return the validator
      * @see Converters#percentToFloat(boolean)
@@ -140,15 +134,13 @@ public class Validators {
     }
 
     /**
-     * Return a validator to check the format of a string previous to a
-     * conversion of a percent string using default locale.
+     * Return a validator to check the format of a string previous to a conversion of a percent string using default
+     * locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number.
+     *            the minimum number of digits allowed in the fraction portion of a number.
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number.
+     *            the maximum number of digits allowed in the fraction portion of a number.
      * @return the validator
      * @see Converters#percentToFloat(boolean)
      */
@@ -157,15 +149,13 @@ public class Validators {
     }
 
     /**
-     * Return a validator to check the format of a string previous to a
-     * conversion of a percent string using the given locale.
+     * Return a validator to check the format of a string previous to a conversion of a percent string using the given
+     * locale.
      * 
      * @param minDecimal
-     *            the minimum number of digits allowed in the fraction portion
-     *            of a number.
+     *            the minimum number of digits allowed in the fraction portion of a number.
      * @param maxDecimal
-     *            the maximum number of digits allowed in the fraction portion
-     *            of a number.
+     *            the maximum number of digits allowed in the fraction portion of a number.
      * @return the validator
      * @see Converters#percentToFloat(boolean)
      */
@@ -205,8 +195,7 @@ public class Validators {
     }
 
     /**
-     * Create a new validator to parse date from a string. This should be use in
-     * conjunction with stringToDateConverter.
+     * Create a new validator to parse date from a string. This should be use in conjunction with stringToDateConverter.
      * 
      * @param format
      *            the date format.
@@ -239,8 +228,7 @@ public class Validators {
     }
 
     /**
-     * Return a validator to check the format of a string using the specified
-     * locale.
+     * Return a validator to check the format of a string using the specified locale.
      * 
      * @return
      */

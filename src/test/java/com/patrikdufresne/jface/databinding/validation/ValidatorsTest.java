@@ -77,11 +77,19 @@ public class ValidatorsTest {
 
         assertTrue(validator.validate("5").isOK()); //$NON-NLS-1$
 
+        assertTrue(validator.validate(" 5 ").isOK()); //$NON-NLS-1$
+
         assertTrue(validator.validate("18.505").isOK()); //$NON-NLS-1$
 
         assertTrue(validator.validate("5,7").isOK()); //$NON-NLS-1$
 
         assertFalse(validator.validate("5 a").isOK()); //$NON-NLS-1$
+
+        assertTrue(validator.validate("").isOK()); //$NON-NLS-1$
+
+        assertTrue(validator.validate(" ").isOK()); //$NON-NLS-1$
+
+        assertTrue(validator.validate("  ").isOK()); //$NON-NLS-1$
 
         assertTrue(validator.validate(null).isOK());
 

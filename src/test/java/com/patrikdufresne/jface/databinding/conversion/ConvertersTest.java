@@ -113,6 +113,19 @@ public class ConvertersTest {
 
         assertEquals(Float.valueOf(7.7f), converter.convert("7.7")); //$NON-NLS-1$
 
+        assertEquals(Float.valueOf(7.7f), converter.convert(" 7.7 ")); //$NON-NLS-1$
+
+        assertEquals(Float.valueOf(0f), converter.convert("")); //$NON-NLS-1$
+
+        assertEquals(Float.valueOf(0f), converter.convert(" ")); //$NON-NLS-1$
+
+        // With not primitive.
+        converter = Converters.stringToFloat(false, 0, 0, Locale.CANADA_FRENCH);
+
+        assertEquals(null, converter.convert("")); //$NON-NLS-1$
+
+        assertEquals(null, converter.convert(" ")); //$NON-NLS-1$
+
     }
 
 }
