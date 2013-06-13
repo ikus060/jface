@@ -18,7 +18,6 @@ package com.patrikdufresne.ui;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.ApplicationWindow;
@@ -73,9 +72,8 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * This function should be called by sub-classes to add view part to this
-     * main window. Typical case, is calling this function in
-     * {@link #addViews()}.
+     * This function should be called by sub-classes to add view part to this main window. Typical case, is calling this
+     * function in {@link #addViews()}.
      * 
      * @param view
      *            the view part to be added
@@ -86,22 +84,19 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * Sub-classes should implement this function to add view part to this
-     * window by calling the function addView(
+     * Sub-classes should implement this function to add view part to this window by calling the function addView(
      */
     protected void addViews() {
         // Nothing to do
     }
 
     /**
-     * Closes this window, disposes its shell, and removes this window from its
-     * window manager (if it has one).
+     * Closes this window, disposes its shell, and removes this window from its window manager (if it has one).
      * <p>
      * This method is extended to save the dialog bounds.
      * </p>
      * 
-     * @return <code>true</code> if the window is (or was already) closed, and
-     *         <code>false</code> if it is still open
+     * @return <code>true</code> if the window is (or was already) closed, and <code>false</code> if it is still open
      */
     @Override
     public boolean close() {
@@ -137,18 +132,30 @@ public abstract class MainWindow extends ApplicationWindow {
      */
     @Override
     protected Control createContents(Composite parent) {
-
-        // Add views to book
-        this.book = new ViewBook(parent, SWT.BORDER);
+        // Create a view book
+        this.book = createViewBook(parent);
+        // Add view to the book
         addViews();
+        // Return the book as the main component of this windows.
+        return this.book;
+    }
 
-        // Sets the TabFolder style
-        CTabFolder tabFolder = this.book.getTabFolder();
+    /**
+     * Create a new instance of {@link ViewBook} and customize it's appearance.
+     * 
+     * @param parent
+     */
+    protected ViewBook createViewBook(Composite parent) {
+        // Create the view book.
+        ViewBook b = new ViewBook(parent, SWT.BORDER);
+
+        // Change it's appearance
+        CTabFolder tabFolder = b.getTabFolder();
         tabFolder.setSimple(false);
         tabFolder.setUnselectedCloseVisible(false);
         ColorUtil.adapt(tabFolder);
 
-        return this.book;
+        return b;
     }
 
     /**
@@ -170,8 +177,7 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * This implementation restore the window location from the preference
-     * store.
+     * This implementation restore the window location from the preference store.
      */
     @Override
     protected Point getInitialLocation(Point initialSize) {
@@ -207,8 +213,7 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * This implementation restore the window initial size from preference
-     * store.
+     * This implementation restore the window initial size from preference store.
      */
     @Override
     protected Point getInitialSize() {
@@ -240,8 +245,7 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * This function is called for every view part added using
-     * {@link #addView(IViewPart)}.
+     * This function is called for every view part added using {@link #addView(IViewPart)}.
      * 
      * @param part
      *            the view part to be init
@@ -258,8 +262,7 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * This implementation return null. Sub-classes should implement this
-     * function to provide different services.
+     * This implementation return null. Sub-classes should implement this function to provide different services.
      * 
      * @param serviceClass
      *            the requested service class.
@@ -271,14 +274,10 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * This implementation of IRunnableContext#run(boolean, boolean,
-     * IRunnableWithProgress) blocks until the runnable has been run,
-     * regardless of the value of <code>fork</code>.
-     * It is recommended that <code>fork</code> is set to
-     * true in most cases. If <code>fork</code> is set to <code>false</code>,
-     * the runnable will run in the UI thread and it is the runnable's
-     * responsibility to call <code>Display.readAndDispatch()</code>
-     * to ensure UI responsiveness.
+     * This implementation of IRunnableContext#run(boolean, boolean, IRunnableWithProgress) blocks until the runnable
+     * has been run, regardless of the value of <code>fork</code>. It is recommended that <code>fork</code> is set to
+     * true in most cases. If <code>fork</code> is set to <code>false</code>, the runnable will run in the UI thread and
+     * it is the runnable's responsibility to call <code>Display.readAndDispatch()</code> to ensure UI responsiveness.
      */
     @Override
     public void run(final boolean fork, boolean cancelable, final IRunnableWithProgress runnable) throws InvocationTargetException, InterruptedException {
@@ -287,9 +286,8 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * Saves the bounds of the shell in the preference store. The bounds are
-     * recorded relative to the parent shell, if there is one, or display
-     * coordinates if there is no parent shell.
+     * Saves the bounds of the shell in the preference store. The bounds are recorded relative to the parent shell, if
+     * there is one, or display coordinates if there is no parent shell.
      * 
      * @param shell
      *            The shell whose bounds are to be stored
