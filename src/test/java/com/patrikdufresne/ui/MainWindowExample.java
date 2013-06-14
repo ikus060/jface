@@ -41,12 +41,45 @@ public class MainWindowExample extends MainWindow {
                 setTitle("My Title");
                 setTitleToolTip("My Tooltip text");
                 this.setTitleImage(JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_INFO));
+
             }
 
             @Override
             public void activate(Composite parent) {
                 Label label = new Label(parent, SWT.BORDER);
                 label.setText("COUCOU");
+            }
+
+        });
+        addView(new ViewPart("PART_ID_2") {
+
+            {
+                setTitle("My Title2");
+                setTitleToolTip("My Tooltip text");
+                this.setTitleImage(JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_INFO));
+
+            }
+
+            @Override
+            public void activate(Composite parent) {
+                Label label = new Label(parent, SWT.BORDER);
+                label.setText("TOI");
+            }
+
+        });
+        addView(new ViewPart("PART_ID_3") {
+
+            {
+                setTitle("My Title3");
+                setTitleToolTip("My Tooltip text");
+                this.setTitleImage(JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_INFO));
+
+            }
+
+            @Override
+            public void activate(Composite parent) {
+                Label label = new Label(parent, SWT.BORDER);
+                label.setText("C'EST MOI!!!!");
             }
 
         });

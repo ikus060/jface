@@ -20,12 +20,16 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -35,6 +39,9 @@ import org.eclipse.swt.widgets.Shell;
  * 
  */
 public abstract class MainWindow extends ApplicationWindow {
+
+    // Constante pour nouvelle couleur du tabfolder background
+    private static final String TABFOLDER_BACKGROUND_COLOR_2 = "TABFOLDER_BACKGROUND_COLOR_2";
 
     /**
      * The composite used to keep track of the active view.
@@ -147,13 +154,25 @@ public abstract class MainWindow extends ApplicationWindow {
      */
     protected ViewBook createViewBook(Composite parent) {
         // Create the view book.
-        ViewBook b = new ViewBook(parent, SWT.BORDER);
+        ViewBook b = new ViewBook(parent, SWT.NONE);
 
         // Change it's appearance
         CTabFolder tabFolder = b.getTabFolder();
-        tabFolder.setSimple(false);
+        tabFolder.setSimple(true);
         tabFolder.setUnselectedCloseVisible(false);
-        ColorUtil.adapt(tabFolder);
+
+        // Creates a blend of black and widget background
+        RGB widgetB1 = ColorUtil.blend(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB(), new RGB(0, 0, 0), 90);
+        // Adds the blend color to the registry
+        JFaceResources.getColorRegistry().put(TABFOLDER_BACKGROUND_COLOR_2, widgetB1);
+
+        // Set background and selected background
+        tabFolder.setBackground(new Color[] {
+                Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND),
+                JFaceResources.getColorRegistry().get(TABFOLDER_BACKGROUND_COLOR_2) }, new int[] { 100 }, true);
+        tabFolder.setSelectionBackground(new Color[] {
+                Display.getDefault().getSystemColor(SWT.COLOR_WHITE),
+                Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND) }, new int[] { 90 }, true);
 
         return b;
     }
