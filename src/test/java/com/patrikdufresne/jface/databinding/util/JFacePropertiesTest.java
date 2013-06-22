@@ -40,14 +40,28 @@ public class JFacePropertiesTest {
 
         public static final String LIST = "list";
 
+        public static final String ITEMS = "items";
+
         public static final String COLLECTION = "collection";
+
+        private String[] items;
+
+        public String[] getItems() {
+            return items;
+        }
+
+        public void setItems(String[] items) {
+            String[] old = this.items;
+            firePropertyChange(ITEMS, old, this.items = Arrays.copyOf(items, items.length));
+        }
 
         public List<String> getList() {
             return list;
         }
 
         public void setList(List<String> list) {
-            this.list = list;
+            List<String> old = this.list;
+            firePropertyChange(ITEMS, old, this.list = list);
         }
 
         public Collection<String> getCollection() {
@@ -124,4 +138,23 @@ public class JFacePropertiesTest {
         assertTrue(action.getList().contains("a"));
         assertTrue(action.getList().contains("b"));
     }
+
+    @Test
+    public void testArray_withBinding() {
+
+        DataBindingContext dbc = new DataBindingContext();
+
+        // Bind the action property list to a model
+        MockAction action = new MockAction();
+
+        WritableList list = new WritableList(new ArrayList<String>(), String.class);
+        dbc.bindList(JFaceProperties.list(MockAction.class, MockAction.ITEMS, MockAction.ITEMS).observe(action), list);
+
+        list.addAll(Arrays.asList("a", "b"));
+
+        assertEquals(2, action.getItems().length);
+        assertTrue(Arrays.asList(action.getItems()).contains("a"));
+        assertTrue(Arrays.asList(action.getItems()).contains("b"));
+    }
+
 }

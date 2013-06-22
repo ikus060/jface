@@ -109,7 +109,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(boolean disposeOnDependencyDispose, IObservableValue... dependencies) {
+    public ComputedObservableValue(boolean disposeOnDependencyDispose, IObservable... dependencies) {
         this(Realm.getDefault(), null, disposeOnDependencyDispose, dependencies);
     }
 
@@ -120,7 +120,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(IObservableValue... dependencies) {
+    public ComputedObservableValue(IObservable... dependencies) {
         this(Realm.getDefault(), null, dependencies);
     }
 
@@ -136,7 +136,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(Object valueType, boolean disposeOnDependencyDispose, IObservableValue... dependencies) {
+    public ComputedObservableValue(Object valueType, boolean disposeOnDependencyDispose, IObservable... dependencies) {
         this(Realm.getDefault(), valueType, disposeOnDependencyDispose, dependencies);
     }
 
@@ -149,7 +149,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(Object valueType, IObservableValue... dependencies) {
+    public ComputedObservableValue(Object valueType, IObservable... dependencies) {
         this(Realm.getDefault(), valueType, dependencies);
     }
 
@@ -165,7 +165,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(Realm realm, boolean disposeOnDependencyDispose, IObservableValue... dependencies) {
+    public ComputedObservableValue(Realm realm, boolean disposeOnDependencyDispose, IObservable... dependencies) {
         this(realm, null, disposeOnDependencyDispose, dependencies);
     }
 
@@ -179,7 +179,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(Realm realm, IObservableValue... dependencies) {
+    public ComputedObservableValue(Realm realm, IObservable... dependencies) {
         this(realm, null, dependencies);
     }
 
@@ -196,13 +196,13 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(Realm realm, Object valueType, boolean disposeOnDependencyDispose, IObservableValue... dependencies) {
+    public ComputedObservableValue(Realm realm, Object valueType, boolean disposeOnDependencyDispose, IObservable... dependencies) {
         super(realm);
         this.valueType = valueType;
         this.disposeOnDependencyDispose = disposeOnDependencyDispose;
         this.dependencies = dependencies;
         if (this.disposeOnDependencyDispose) {
-            for (IObservableValue dependency : dependencies) {
+            for (IObservable dependency : dependencies) {
                 dependency.addDisposeListener(this.privateInterface);
             }
         }
@@ -218,7 +218,7 @@ public abstract class ComputedObservableValue extends AbstractObservableValue {
      * @param dependencies
      *            list of dependency.
      */
-    public ComputedObservableValue(Realm realm, Object valueType, IObservableValue... dependencies) {
+    public ComputedObservableValue(Realm realm, Object valueType, IObservable... dependencies) {
         this(realm, valueType, false, dependencies);
     }
 

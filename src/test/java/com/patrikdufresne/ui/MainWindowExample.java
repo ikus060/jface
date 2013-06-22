@@ -15,11 +15,17 @@
  */
 package com.patrikdufresne.ui;
 
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+
+import com.patrikdufresne.jface.dialogs.StatusHandlerDialog;
 
 /**
  * Snippet to display {@link MainWindow} usage.
@@ -35,22 +41,7 @@ public class MainWindowExample extends MainWindow {
 
     @Override
     public void addViews() {
-        addView(new ViewPart("PART_ID_1") {
-
-            {
-                setTitle("My Title");
-                setTitleToolTip("My Tooltip text");
-                this.setTitleImage(JFaceResources.getImage(Dialog.DLG_IMG_MESSAGE_INFO));
-
-            }
-
-            @Override
-            public void activate(Composite parent) {
-                Label label = new Label(parent, SWT.BORDER);
-                label.setText("COUCOU");
-            }
-
-        });
+        addView(new ActionComboExampleViewPart("PART_ID_1"));
         addView(new ViewPart("PART_ID_2") {
 
             {
@@ -89,9 +80,18 @@ public class MainWindowExample extends MainWindow {
      * @param args
      */
     public static void main(String[] args) {
-        MainWindowExample main = new MainWindowExample();
-        main.setBlockOnOpen(true);
-        main.open();
-    }
 
+        Policy.setStatusHandler(StatusHandlerDialog.getStatusHandler());
+
+        final Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(Display.getCurrent()), new Runnable() {
+            @Override
+            public void run() {
+                MainWindowExample main = new MainWindowExample();
+                main.setBlockOnOpen(true);
+                main.open();
+            }
+        });
+
+    }
 }

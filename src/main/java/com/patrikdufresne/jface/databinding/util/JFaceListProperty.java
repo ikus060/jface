@@ -17,6 +17,7 @@ package com.patrikdufresne.jface.databinding.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,12 +32,13 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
 /**
- * Class that supports the use of {@link IObservableList} with objects that
- * follow standard bean method naming conventions but notify an
- * {@link IPropertyChangeListener} when the property changes.
+ * Class that supports the use of {@link IObservableList} with objects that follow standard bean method naming
+ * conventions but notify an {@link IPropertyChangeListener} when the property changes.
  * <p>
- * This class is an adaptation of the JFaceProperty to support
- * {@link IObservableList} instead of {@link IObservableValue}.
+ * This class is an adaptation of the JFaceProperty to support {@link IObservableList} instead of
+ * {@link IObservableValue}.
+ * <p>
+ * This class is supporting List or Array property.
  */
 public class JFaceListProperty extends SimpleListProperty {
 
@@ -132,15 +134,13 @@ public class JFaceListProperty extends SimpleListProperty {
 
     /**
      * @param fieldName
-     *            the field name i.e.: the function name without get/set
-     *            keywork.
+     *            the field name i.e.: the function name without get/set keywork.
      * @param property
      *            the property key fired
      * @param cls
      *            the class
      * @throws IllegalArgumentException
-     *             if the return type of the property is not a subclass of
-     *             {@link List}
+     *             if the return type of the property is not a subclass of {@link List}
      */
     public JFaceListProperty(String fieldName, String property, Class cls) {
         this.property = property;
@@ -151,8 +151,8 @@ public class JFaceListProperty extends SimpleListProperty {
             getterMethod = cls.getMethod(getterName, new Class[] {});
             returnType = getterMethod.getReturnType();
             // Make sure the return type os subclass of List
-            if (!List.class.isAssignableFrom(returnType)) {
-                throw new IllegalArgumentException("return type is not List");
+            if (!List.class.isAssignableFrom(returnType) && !returnType.isArray()) {
+                throw new IllegalArgumentException("return type is not List or Array");
             }
             setterMethod = cls.getMethod(getSetterName(fieldName), new Class[] { returnType });
             addPropertyListenerMethod = cls.getMethod("addPropertyChangeListener", new Class[] { IPropertyChangeListener.class }); //$NON-NLS-1$
@@ -178,6 +178,8 @@ public class JFaceListProperty extends SimpleListProperty {
             Object obj = getterMethod.invoke(source, new Object[] {});
             if (obj instanceof List) {
                 return (List) obj;
+            } else if (obj != null && obj.getClass().isArray()) {
+                return Arrays.asList((Object[]) obj);
             }
             return Collections.EMPTY_LIST;
         } catch (InvocationTargetException e) {
@@ -193,10 +195,17 @@ public class JFaceListProperty extends SimpleListProperty {
     @Override
     protected void doSetList(Object source, List list, ListDiff diff) {
         try {
-            setterMethod.invoke(source, new Object[] { list });
+            if (List.class.isAssignableFrom(returnType)) {
+                setterMethod.invoke(source, new Object[] { list });
+            } else if (returnType.isArray()) {
+                Object[] array = (Object[]) java.lang.reflect.Array.newInstance(returnType.getComponentType(), list.size());
+                setterMethod.invoke(source, new Object[] { list.toArray(array) });
+            }
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
