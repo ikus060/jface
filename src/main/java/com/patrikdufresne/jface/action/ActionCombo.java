@@ -116,6 +116,7 @@ public class ActionCombo extends Action {
      * @return the menu
      */
     protected Menu createMenu(Menu menu) {
+        if (items == null) return menu;
         for (Object element : this.items) {
             createMenuItem(menu, element);
         }
@@ -165,7 +166,7 @@ public class ActionCombo extends Action {
      * @return
      */
     public Object[] getItems() {
-        return this.items;
+        return this.items == null ? new Object[0] : this.items;
     }
 
     /**
@@ -213,7 +214,14 @@ public class ActionCombo extends Action {
      * @param items
      */
     public void setItems(Object[] items) {
+
         firePropertyChange(ITEMS, this.items, this.items = Arrays.copyOf(items, items.length));
+        if (!Arrays.asList(items).contains(selection)) {
+            super.setText(this.defaultMessage);
+        } else {
+            super.setText(getElementLabel(this.selection));
+        }
+
     }
 
     /**
@@ -225,7 +233,7 @@ public class ActionCombo extends Action {
     public void setSelection(Object element) {
         // TODO Check if the element is inside the elements list.
         firePropertyChange(SELECTION, this.selection, this.selection = element);
-        if (this.selection != null) {
+        if (Arrays.asList(items).contains(selection)) {
             super.setText(getElementLabel(this.selection));
         } else {
             super.setText(this.defaultMessage);

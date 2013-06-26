@@ -47,7 +47,7 @@ public class ActionComboExampleViewPart extends AbstractViewPart {
     @Override
     public void activate(Composite parent) {
         label = new Label(parent, SWT.BORDER);
-        label.setText("COUCOU");
+        label.setText("item1");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         IToolBarManager toolbar = getSite().getToolBarManager();
@@ -70,8 +70,8 @@ public class ActionComboExampleViewPart extends AbstractViewPart {
 
         // Bind the selection
         getDbc().bindValue(
-                WidgetProperties.text().observe(label),
-                JFaceProperties.value(ActionCombo.class, ActionCombo.SELECTION, ActionCombo.SELECTION).observe(this.actionDropDown));
+                JFaceProperties.value(ActionCombo.class, ActionCombo.SELECTION, ActionCombo.SELECTION).observe(this.actionDropDown),
+                WidgetProperties.text().observe(label));
 
     }
 }
