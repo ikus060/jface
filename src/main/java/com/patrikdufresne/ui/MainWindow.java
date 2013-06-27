@@ -126,15 +126,6 @@ public abstract class MainWindow extends ApplicationWindow {
     }
 
     /**
-     * This implementation add a shell title and icon.
-     */
-    @Override
-    protected void configureShell(final Shell shell) {
-        super.configureShell(shell);
-        shell.setMaximized(getInitialMaximized());
-    }
-
-    /**
      * This implementation create a tab folder to hold the view part.
      */
     @Override
@@ -261,6 +252,16 @@ public abstract class MainWindow extends ApplicationWindow {
      */
     public IViewPart[] getViews() {
         return getBook().getViews();
+    }
+
+    /**
+     * This implementation set maximized.
+     */
+
+    @Override
+    protected void initializeBounds() {
+        super.initializeBounds();
+        getShell().setMaximized(getInitialMaximized());
     }
 
     /**
