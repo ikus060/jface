@@ -32,4 +32,8 @@ public class FormWidgetProperties {
         return new FormWidgetTextProperty();
     }
 
+    public static IWidgetValueProperty text(boolean parseTags, boolean expandURLs) {
+        return new FormTextTextProperty(parseTags, expandURLs);
+    }
+
 }
