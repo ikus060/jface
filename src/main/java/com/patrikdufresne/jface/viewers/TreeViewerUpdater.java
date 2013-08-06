@@ -15,6 +15,7 @@
  */
 package com.patrikdufresne.jface.viewers;
 
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -23,10 +24,10 @@ import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.Widget;
 
 /**
- * Implementation of the {@link ViewerColumnUpdater} interface for the
- * {@link TreeViewer}.
+ * Implementation of the {@link ViewerColumnUpdater} interface for the {@link TreeViewer}.
  * 
  * @author Patrik Dufresne
  * 
@@ -44,12 +45,25 @@ public class TreeViewerUpdater implements ViewerColumnUpdater {
     }
 
     @Override
+    public TreeColumnLayout createColumnLayout() {
+        return new TreeColumnLayout();
+    }
+
+    @Override
     public ViewerColumn getColumn(ColumnViewer viewer, int index) {
         if (viewer == null) {
             throw new NullPointerException();
         }
         TreeColumn column = ((TreeViewer) viewer).getTree().getColumn(index);
         return (ViewerColumn) column.getData(COLUMN_VIEWER_KEY);
+    }
+
+    @Override
+    public Widget getColumn(ViewerColumn column) {
+        if (column == null) {
+            throw new NullPointerException();
+        }
+        return ((TreeViewerColumn) column).getColumn();
     }
 
     @Override
@@ -118,6 +132,12 @@ public class TreeViewerUpdater implements ViewerColumnUpdater {
             throw new NullPointerException();
         }
         return ((TreeViewer) column.getViewer()).getTree().indexOf(((TreeViewerColumn) column).getColumn());
+    }
+
+    @Override
+    public void removeListener(ViewerColumn column, int type, Listener listener) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
@@ -190,11 +210,5 @@ public class TreeViewerUpdater implements ViewerColumnUpdater {
             throw new NullPointerException();
         }
         ((TreeViewerColumn) column).getColumn().setWidth(width);
-    }
-
-    @Override
-    public void removeListener(ViewerColumn column, int type, Listener listener) {
-        // TODO Auto-generated method stub
-
     }
 }

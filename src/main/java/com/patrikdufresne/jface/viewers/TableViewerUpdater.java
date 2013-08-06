@@ -15,6 +15,7 @@
  */
 package com.patrikdufresne.jface.viewers;
 
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -23,10 +24,10 @@ import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Widget;
 
 /**
- * Implementation of the {@link ViewerColumnUpdater} interface for the
- * {@link TableViewer}.
+ * Implementation of the {@link ViewerColumnUpdater} interface for the {@link TableViewer}.
  * 
  * @author Patrik Dufresne
  * 
@@ -44,12 +45,25 @@ public class TableViewerUpdater implements ViewerColumnUpdater {
     }
 
     @Override
+    public TableColumnLayout createColumnLayout() {
+        return new TableColumnLayout();
+    }
+
+    @Override
     public ViewerColumn getColumn(ColumnViewer viewer, int index) {
         if (viewer == null) {
             throw new NullPointerException();
         }
         TableColumn column = ((TableViewer) viewer).getTable().getColumn(index);
         return (ViewerColumn) column.getData(COLUMN_VIEWER_KEY);
+    }
+
+    @Override
+    public Widget getColumn(ViewerColumn column) {
+        if (column == null) {
+            throw new NullPointerException();
+        }
+        return ((TableViewerColumn) column).getColumn();
     }
 
     @Override
@@ -118,6 +132,11 @@ public class TableViewerUpdater implements ViewerColumnUpdater {
             throw new NullPointerException();
         }
         return ((TableViewer) column.getViewer()).getTable().indexOf(((TableViewerColumn) column).getColumn());
+    }
+
+    @Override
+    public void removeListener(ViewerColumn column, int type, Listener listener) {
+        // TODO Auto-generated method stub
     }
 
     @Override
@@ -190,11 +209,5 @@ public class TableViewerUpdater implements ViewerColumnUpdater {
             throw new NullPointerException();
         }
         ((TableViewerColumn) column).getColumn().setWidth(width);
-    }
-
-    @Override
-    public void removeListener(ViewerColumn column, int type, Listener listener) {
-        // TODO Auto-generated method stub
-
     }
 }

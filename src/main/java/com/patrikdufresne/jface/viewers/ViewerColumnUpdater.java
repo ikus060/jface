@@ -15,10 +15,12 @@
  */
 package com.patrikdufresne.jface.viewers;
 
+import org.eclipse.jface.layout.AbstractColumnLayout;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * This interface is used to update the viewer column.
@@ -41,6 +43,13 @@ public interface ViewerColumnUpdater {
     void addListener(ViewerColumn column, int type, Listener listener);
 
     /**
+     * Return the column layout or null
+     * 
+     * @return the column layout
+     */
+    AbstractColumnLayout createColumnLayout();
+
+    /**
      * Return the viewer column at the given index
      * 
      * @param index
@@ -50,6 +59,16 @@ public interface ViewerColumnUpdater {
     ViewerColumn getColumn(ColumnViewer viewer, int index);
 
     /**
+     * Return the widget column of the given ViewerColumn
+     * 
+     * @param column
+     *            the column
+     * 
+     * @return the widget
+     */
+    Widget getColumn(ViewerColumn column);
+
+    /**
      * Return the number of column;
      * 
      * @param viewer
@@ -57,8 +76,8 @@ public interface ViewerColumnUpdater {
     int getColumnCount(ColumnViewer viewer);
 
     /**
-     * Gets columns order from the attach viewer. It's use
-     * <code>getColumnOrder</code> on a <code>Tree</code> or <code>Table</code>.
+     * Gets columns order from the attach viewer. It's use <code>getColumnOrder</code> on a <code>Tree</code> or
+     * <code>Table</code>.
      * 
      * @return array of orders
      */
@@ -111,6 +130,18 @@ public interface ViewerColumnUpdater {
      * @return the index
      */
     int indexOf(ViewerColumn column);
+
+    /**
+     * Remove the listener specified from the column widget.
+     * 
+     * @param column
+     *            the column viewer
+     * @param type
+     *            the event type
+     * @param listener
+     *            the listener
+     */
+    void removeListener(ViewerColumn column, int type, Listener listener);
 
     /**
      * Sub-classes should sets the widgets column order.
@@ -194,17 +225,5 @@ public interface ViewerColumnUpdater {
      *            the new width value
      */
     void setWidth(ViewerColumn column, int width);
-
-    /**
-     * Remove the listener specified from the column widget.
-     * 
-     * @param column
-     *            the column viewer
-     * @param type
-     *            the event type
-     * @param listener
-     *            the listener
-     */
-    void removeListener(ViewerColumn column, int type, Listener listener);
 
 }
