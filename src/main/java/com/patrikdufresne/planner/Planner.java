@@ -2234,14 +2234,12 @@ public class Planner extends Canvas {
     private boolean updateDateTimeRange() {
 
         this.calendar.setTime(curDateSelection.getTime());
-        int week = this.calendar.get(Calendar.WEEK_OF_YEAR);
         // First day of week already sets
         this.calendar.set(Calendar.MILLISECOND, 0);
         this.calendar.set(Calendar.SECOND, 0);
         this.calendar.set(Calendar.MINUTE, 0);
         this.calendar.set(Calendar.HOUR_OF_DAY, 0);
         this.calendar.set(Calendar.DAY_OF_WEEK, this.firstDayOfWeek);
-        this.calendar.set(Calendar.WEEK_OF_YEAR, week);
 
         Date start = this.calendar.getTime();
         this.calendar.add(Calendar.DAY_OF_MONTH, 7);
