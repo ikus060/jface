@@ -17,6 +17,7 @@ package com.patrikdufresne.jface.databinding.util;
 
 import org.eclipse.core.databinding.property.list.IListProperty;
 import org.eclipse.core.databinding.property.set.ISetProperty;
+import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.jface.util.IPropertyChangeListener;
 
 /**
@@ -130,4 +131,19 @@ public class JFaceProperties extends org.eclipse.jface.databinding.util.JFacePro
         return new JFaceSetProperty(fieldName, propertyName, cls, null);
     }
 
+    /**
+     * Returns a property for observing the property of the given model object whose getter and setter use the suffix
+     * fieldName in the same manner as a Java bean and which fires events to an {@link IPropertyChangeListener} for the
+     * given propertyName when the value of the field changes.
+     * 
+     * @param clazz
+     *            the class defining the getter and setter
+     * @param propertyName
+     *            the property name
+     * 
+     * @return an observable value
+     */
+    public static IValueProperty value(Class cls, String propertyName) {
+        return org.eclipse.jface.databinding.util.JFaceProperties.value(cls, propertyName, propertyName);
+    }
 }
