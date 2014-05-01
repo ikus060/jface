@@ -39,7 +39,6 @@ import org.eclipse.jface.databinding.fieldassist.ControlDecorationUpdater;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.GC;
@@ -419,7 +418,7 @@ public class DateTimeSupport {
      * updater.
      */
     public void addDecorationSupport() {
-        addDecorationSupport(SWT.LEFT | SWT.TOP, null);
+        addDecorationSupport(SWT.LEFT | SWT.TOP, new ControlDecorationUpdater());
     }
 
     /**
