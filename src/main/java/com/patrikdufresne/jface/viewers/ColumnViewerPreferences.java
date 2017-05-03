@@ -212,7 +212,7 @@ public class ColumnViewerPreferences {
         }
 
         int[] widths = loadPreferences(PREF_COLUMN_WIDTH);
-        if (widths.length > 0) {
+        if (widths.length == this.updater.getColumnCount(this.viewer)) {
             setColumnWidths(widths);
         }
 
