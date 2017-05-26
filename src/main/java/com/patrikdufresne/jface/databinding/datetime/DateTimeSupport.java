@@ -45,6 +45,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 
+import com.patrikdufresne.jface.fieldassist.ControlDecorationSupportUtils;
+
 /**
  * Utility class to provide support for date time select using {@link Combo} or
  * {@link CCombo}. This class allows to bind a widget text property with an
@@ -95,7 +97,8 @@ public class DateTimeSupport {
                 format.parse(input.toString());
                 return ValidationStatus.ok();
             } catch (ParseException e) {
-                return ValidationStatus.error(String.format(BindingMessages.getString("Validate_DateInvalid"), //$NON-NLS-1$
+                return ValidationStatus.error(String.format(
+                        BindingMessages.getString("Validate_DateInvalid"), //$NON-NLS-1$
                         input.toString()));
             }
         }
@@ -436,7 +439,7 @@ public class DateTimeSupport {
     public void addDecorationSupport(int position, ControlDecorationUpdater updater) {
         if (this.decorationSupport == null) {
             // Add a decorator to display error
-            this.decorationSupport = ControlDecorationSupport.create(binding, position, null, updater);
+            this.decorationSupport = ControlDecorationSupportUtils.create(binding, position, null, updater);
         }
     }
 

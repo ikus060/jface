@@ -55,13 +55,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Widget;
 
+import com.patrikdufresne.jface.fieldassist.ControlDecorationSupportUtils;
 import com.patrikdufresne.jface.viewers.AbstractColumnSorter;
 import com.patrikdufresne.jface.viewers.TableViewerUpdater;
 import com.patrikdufresne.jface.viewers.TreeViewerUpdater;
 import com.patrikdufresne.jface.viewers.ViewerColumnUpdater;
 
 /**
- * Utility class to create columns and define it's properties using chaining function.
+ * Utility class to create columns and define it's properties using chaining
+ * function.
  * 
  * @author Patrik Dufresne
  * 
@@ -110,7 +112,8 @@ public class ColumnSupport {
     private static Comparator naturalComparator;
 
     /**
-     * Create a new columns for the given table viewer. The column content will be map using the given value property.
+     * Create a new columns for the given table viewer. The column content will
+     * be map using the given value property.
      * 
      * @param viewer
      *            the table viewer
@@ -129,7 +132,8 @@ public class ColumnSupport {
     }
 
     /**
-     * Create a new columns for the given viewer. The column content will be map using the given attributeMap.
+     * Create a new columns for the given viewer. The column content will be map
+     * using the given attributeMap.
      * 
      * @param viewer
      *            the viewer
@@ -146,7 +150,8 @@ public class ColumnSupport {
     }
 
     /**
-     * Create a new columns for the given tree viewer. The column content will be map using the given value property.
+     * Create a new columns for the given tree viewer. The column content will
+     * be map using the given value property.
      * 
      * @param viewer
      *            the tree viewer
@@ -165,7 +170,8 @@ public class ColumnSupport {
     }
 
     /**
-     * Create a new columns for the given tree viewer. The column content will be map using the given value property.
+     * Create a new columns for the given tree viewer. The column content will
+     * be map using the given value property.
      * 
      * @param viewer
      *            the tree viewer
@@ -182,15 +188,17 @@ public class ColumnSupport {
     }
 
     /**
-     * Using reflection, this function return the viewer associated with the given cell editor by calling the function
-     * <code>getViewer()</code>.
+     * Using reflection, this function return the viewer associated with the
+     * given cell editor by calling the function <code>getViewer()</code>.
      * 
      * @param cellEditor
      *            the cell editor
      * @return the associated viewer or null
      */
     public static Viewer getViewer(CellEditor cellEditor) {
-        Method method = internalFindMethod(cellEditor.getClass(), "getViewer", //$NON-NLS-1$
+        Method method = internalFindMethod(
+                cellEditor.getClass(),
+                "getViewer", //$NON-NLS-1$
                 0,
                 null);
         try {
@@ -205,7 +213,8 @@ public class ColumnSupport {
     }
 
     /**
-     * Internal support for finding a target methodName with a given parameter list on a given class.
+     * Internal support for finding a target methodName with a given parameter
+     * list on a given class.
      */
     static Method internalFindMethod(Class start, String methodName, int argCount, Class args[]) {
         // For overriden methods we need to find the most derived version.
@@ -321,7 +330,8 @@ public class ColumnSupport {
     }
 
     /**
-     * Used to activate the previously created sorting. Does nothing if no sorting exists.
+     * Used to activate the previously created sorting. Does nothing if no
+     * sorting exists.
      * 
      * @return same object for chaining
      */
@@ -333,8 +343,9 @@ public class ColumnSupport {
     }
 
     /**
-     * Add a checkbox editing support to this column. Same as calling the function
-     * <code>addCheckboxEditingSupport(dbc, property, null, null)</code<.
+     * Add a checkbox editing support to this column. Same as calling the
+     * function <code>addCheckboxEditingSupport(dbc, property, null,
+     * null)</code<.
      * 
      * @param dbc
      *            the databinding context
@@ -349,7 +360,8 @@ public class ColumnSupport {
     /**
      * Add editing support to the column.
      * <p>
-     * It's recommended to provide an update strategy for target to model to persist the data. It should be created with
+     * It's recommended to provide an update strategy for target to model to
+     * persist the data. It should be created with
      * UpdateValueStrategy.POLICY_CONVERT.
      * <p>
      * It's recommended to provide a null strategy for model to target.
@@ -359,11 +371,11 @@ public class ColumnSupport {
      * @param property
      *            the property to be edited. Should be a boolean type.
      * @param targetToModel
-     *            strategy to employ when the target is the source of the change and the model is the destination or
-     *            null to use default
+     *            strategy to employ when the target is the source of the change
+     *            and the model is the destination or null to use default
      * @param modelToTarget
-     *            strategy to employ when the model is the source of the change and the target is the destination or
-     *            null to use default.
+     *            strategy to employ when the model is the source of the change
+     *            and the target is the destination or null to use default.
      * @return same object for chaining
      */
     public ColumnSupport addCheckboxEditingSupport(
@@ -375,7 +387,8 @@ public class ColumnSupport {
         this.column.setEditingSupport(new ObservableValueEditingSupport(this.column.getViewer(), dbc) {
 
             /**
-             * This implementation create the binding using the update strategy when available.
+             * This implementation create the binding using the update strategy
+             * when available.
              */
             @Override
             protected Binding createBinding(IObservableValue target, IObservableValue model) {
@@ -467,8 +480,9 @@ public class ColumnSupport {
     }
 
     /**
-     * Add text editing support to the column using the default property and default update strategy. Same as calling
-     * the function <code>addTextEditingSupport(dbc, null, null,null)</code>.
+     * Add text editing support to the column using the default property and
+     * default update strategy. Same as calling the function
+     * <code>addTextEditingSupport(dbc, null, null,null)</code>.
      * 
      * @param dbc
      *            the data binding context.
@@ -481,7 +495,8 @@ public class ColumnSupport {
     /**
      * Add text editing support to the column.
      * <p>
-     * It's recommended to provide an update strategy for target to model to persist the data. It should be created with
+     * It's recommended to provide an update strategy for target to model to
+     * persist the data. It should be created with
      * UpdateValueStrategy.POLICY_CONVERT.
      * <p>
      * It's recommended to provide a null strategy for model to target.
@@ -491,13 +506,14 @@ public class ColumnSupport {
      * @param style
      *            the text widget's style.
      * @param property
-     *            the property to be edited or null to use default property. The property value should be a String.
+     *            the property to be edited or null to use default property. The
+     *            property value should be a String.
      * @param targetToModel
-     *            strategy to employ when the target is the source of the change and the model is the destination or
-     *            null to use default
+     *            strategy to employ when the target is the source of the change
+     *            and the model is the destination or null to use default
      * @param modelToTarget
-     *            strategy to employ when the model is the source of the change and the target is the destination or
-     *            null to use default.
+     *            strategy to employ when the model is the source of the change
+     *            and the target is the destination or null to use default.
      * @return same object for chaining
      */
     public ColumnSupport addTextEditingSupport(
@@ -530,13 +546,17 @@ public class ColumnSupport {
             };
 
             /**
-             * This implementation create the binding using the update strategy when available.
+             * This implementation create the binding using the update strategy
+             * when available.
              */
             @Override
             protected Binding createBinding(IObservableValue target, IObservableValue model) {
                 // Create the binding with our update strategy
-                Binding binding = dbc.bindValue(target, model, targetToModel != null ? targetToModel : new UpdateValueStrategy(
-                        UpdateValueStrategy.POLICY_CONVERT), modelToTarget != null ? modelToTarget : null);
+                Binding binding = dbc.bindValue(
+                        target,
+                        model,
+                        targetToModel != null ? targetToModel : new UpdateValueStrategy(UpdateValueStrategy.POLICY_CONVERT),
+                        modelToTarget != null ? modelToTarget : null);
 
                 // Attach a dispose listener to dispose the control
                 // decoration too.
@@ -545,7 +565,7 @@ public class ColumnSupport {
                 // While creating the binding, also create the
                 // decoration
                 if (this.decoration == null) {
-                    this.decoration = ControlDecorationSupport.create(binding, SWT.TOP | SWT.LEFT);
+                    this.decoration = ControlDecorationSupportUtils.create(binding, SWT.TOP | SWT.LEFT);
                 }
 
                 return binding;
@@ -581,8 +601,9 @@ public class ColumnSupport {
     }
 
     /**
-     * Add text editing support to the column using the property specified and default update strategies. Same as
-     * calling the function <code>addTextEditingSupport(dbc, property, null,null)</code>.
+     * Add text editing support to the column using the property specified and
+     * default update strategies. Same as calling the function
+     * <code>addTextEditingSupport(dbc, property, null,null)</code>.
      * 
      * @param dbc
      *            the data binding context.
@@ -597,7 +618,8 @@ public class ColumnSupport {
     /**
      * Add text editing support to the column.
      * <p>
-     * It's recommended to provide an update strategy for target to model to persist the data. It should be created with
+     * It's recommended to provide an update strategy for target to model to
+     * persist the data. It should be created with
      * UpdateValueStrategy.POLICY_CONVERT.
      * <p>
      * It's recommended to provide a null strategy for model to target.
@@ -605,13 +627,14 @@ public class ColumnSupport {
      * @param dbc
      *            the data binding context
      * @param property
-     *            the property to be edited or null to use default property. The property value should be a String.
+     *            the property to be edited or null to use default property. The
+     *            property value should be a String.
      * @param targetToModel
-     *            strategy to employ when the target is the source of the change and the model is the destination or
-     *            null to use default
+     *            strategy to employ when the target is the source of the change
+     *            and the model is the destination or null to use default
      * @param modelToTarget
-     *            strategy to employ when the model is the source of the change and the target is the destination or
-     *            null to use default.
+     *            strategy to employ when the model is the source of the change
+     *            and the target is the destination or null to use default.
      * @return same object for chaining
      */
     public ColumnSupport addTextEditingSupport(
@@ -624,16 +647,17 @@ public class ColumnSupport {
 
     /**
      * Add editing support to the column. Same as calling the function
-     * <code>addTextEditingSupport(dbc, null, targetToModel, modelToTarget)</code> .
+     * <code>addTextEditingSupport(dbc, null, targetToModel, modelToTarget)</code>
+     * .
      * 
      * @param dbc
      *            the data binding context to be used during the editing.
      * @param targetToModel
-     *            strategy to employ when the target is the source of the change and the model is the destination or
-     *            null to use default
+     *            strategy to employ when the target is the source of the change
+     *            and the model is the destination or null to use default
      * @param modelToTarget
-     *            strategy to employ when the model is the source of the change and the target is the destination or
-     *            null to use default.
+     *            strategy to employ when the model is the source of the change
+     *            and the target is the destination or null to use default.
      * @return same object for chaining
      */
     public ColumnSupport addTextEditingSupport(DataBindingContext dbc, UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
@@ -642,14 +666,16 @@ public class ColumnSupport {
 
     /**
      * Add viewer editing support to the column. Same as calling the function
-     * <code>addViewerEditingSupport(dbc, property, cellEditor,null,null)</code> .
+     * <code>addViewerEditingSupport(dbc, property, cellEditor,null,null)</code>
+     * .
      * 
      * @param dbc
      *            the data binding context
      * @param property
      *            the property to be edited
      * @param cellEditor
-     *            the cell editor. Should have a getViewer() function returning the internal viewer object.
+     *            the cell editor. Should have a getViewer() function returning
+     *            the internal viewer object.
      * @return same object for chaining
      */
     public ColumnSupport addViewerEditingSupport(DataBindingContext dbc, final IValueProperty property, final CellEditor cellEditor) {
@@ -659,7 +685,8 @@ public class ColumnSupport {
     /**
      * Add viewer editing support to the column.
      * <p>
-     * It's recommended to provide an update strategy for target to model to persist the data. It should be created with
+     * It's recommended to provide an update strategy for target to model to
+     * persist the data. It should be created with
      * UpdateValueStrategy.POLICY_CONVERT.
      * <p>
      * It's recommended to provide a null strategy for model to target.
@@ -669,13 +696,14 @@ public class ColumnSupport {
      * @param property
      *            the property to be edited. Should be a string type.
      * @param cellEditor
-     *            the cell editor. Should have a getViewer() function returning the internal viewer object.
+     *            the cell editor. Should have a getViewer() function returning
+     *            the internal viewer object.
      * @param targetToModel
-     *            strategy to employ when the target is the source of the change and the model is the destination or
-     *            null to use default
+     *            strategy to employ when the target is the source of the change
+     *            and the model is the destination or null to use default
      * @param modelToTarget
-     *            strategy to employ when the model is the source of the change and the target is the destination or
-     *            null to use default.
+     *            strategy to employ when the model is the source of the change
+     *            and the target is the destination or null to use default.
      * @return same object for chaining
      */
     public ColumnSupport addViewerEditingSupport(
@@ -690,7 +718,8 @@ public class ColumnSupport {
     /**
      * Add viewer editing support to the column.
      * <p>
-     * It's recommended to provide an update strategy for target to model to persist the data. It should be created with
+     * It's recommended to provide an update strategy for target to model to
+     * persist the data. It should be created with
      * UpdateValueStrategy.POLICY_CONVERT.
      * <p>
      * It's recommended to provide a null strategy for model to target.
@@ -700,16 +729,18 @@ public class ColumnSupport {
      * @param property
      *            the property to be edited.
      * @param canEditProperty
-     *            a property to verify if the property may be edited or null to always allow editing. The property
-     *            should return False or null to present editing.
+     *            a property to verify if the property may be edited or null to
+     *            always allow editing. The property should return False or null
+     *            to present editing.
      * @param cellEditor
-     *            the cell editor. Should have a getViewer() function returning the internal viewer object.
+     *            the cell editor. Should have a getViewer() function returning
+     *            the internal viewer object.
      * @param targetToModel
-     *            strategy to employ when the target is the source of the change and the model is the destination or
-     *            null to use default
+     *            strategy to employ when the target is the source of the change
+     *            and the model is the destination or null to use default
      * @param modelToTarget
-     *            strategy to employ when the model is the source of the change and the target is the destination or
-     *            null to use default.
+     *            strategy to employ when the model is the source of the change
+     *            and the target is the destination or null to use default.
      * @return same object for chaining
      */
     public ColumnSupport addViewerEditingSupport(
@@ -729,7 +760,8 @@ public class ColumnSupport {
         this.column.setEditingSupport(new ObservableValueEditingSupport(this.column.getViewer(), dbc) {
 
             /**
-             * This implementation use the canEditProperty to determine if we can edit the element.
+             * This implementation use the canEditProperty to determine if we
+             * can edit the element.
              */
             @Override
             protected boolean canEdit(Object element) {
@@ -744,7 +776,8 @@ public class ColumnSupport {
             }
 
             /**
-             * This implementation create the binding using the update strategy when available.
+             * This implementation create the binding using the update strategy
+             * when available.
              */
             @Override
             protected Binding createBinding(IObservableValue target, IObservableValue model) {
@@ -822,11 +855,13 @@ public class ColumnSupport {
     }
 
     /**
-     * Sets the application defined property of the receiver with the specified name to the given value.
+     * Sets the application defined property of the receiver with the specified
+     * name to the given value.
      * <p>
-     * Applications may associate arbitrary objects with the receiver in this fashion. If the objects stored in the
-     * properties need to be notified when the widget is disposed of, it is the application's responsibility to hook the
-     * Dispose event on the widget and do so.
+     * Applications may associate arbitrary objects with the receiver in this
+     * fashion. If the objects stored in the properties need to be notified when
+     * the widget is disposed of, it is the application's responsibility to hook
+     * the Dispose event on the widget and do so.
      * </p>
      * 
      * @param key
@@ -840,8 +875,10 @@ public class ColumnSupport {
      *                </ul>
      * @exception SWTException
      *                <ul>
-     *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-     *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+     *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+     *                disposed</li>
+     *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+     *                thread that created the receiver</li>
      *                </ul>
      * 
      */
@@ -851,8 +888,8 @@ public class ColumnSupport {
     }
 
     /**
-     * Sets the layout data for the column. If not TableColumnLayout, will be set to this type. The number of children
-     * must be 1.
+     * Sets the layout data for the column. If not TableColumnLayout, will be
+     * set to this type. The number of children must be 1.
      * 
      * @param data
      *            the ColumnLayoutData
@@ -881,16 +918,19 @@ public class ColumnSupport {
     }
 
     /**
-     * Sets the moveable attribute. A column that is moveable can be reordered by the user by dragging the header. A
-     * column that is not moveable cannot be dragged by the user but may be reordered by the programmer.
+     * Sets the moveable attribute. A column that is moveable can be reordered
+     * by the user by dragging the header. A column that is not moveable cannot
+     * be dragged by the user but may be reordered by the programmer.
      * 
      * @param moveable
      *            the moveable attribute
      * 
      * @exception SWTException
      *                <ul>
-     *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-     *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+     *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+     *                disposed</li>
+     *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+     *                thread that created the receiver</li>
      *                </ul>
      */
     public ColumnSupport setMoveable(boolean moveable) {
