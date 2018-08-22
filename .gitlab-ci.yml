@@ -1,0 +1,37 @@
+image: maven:3-jdk-8
+
+variables:
+  MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+               -Dorg.slf4j.simpleLogger.showDateTime=true
+               -Djava.awt.headless=true
+               -Dmaven.repo.local=.m2/repository"
+
+# Cache downloaded dependencies and plugins between builds.
+cache:
+  paths:
+    - .m2/repository
+
+stages:
+  - test
+  - deploy
+  - publish
+
+before_script:
+- export REVISION="$(curl http://git.patrikdufresne.com/pdsl/maven-scm-version/raw/master/version.sh | bash -)"
+- echo "REVISION=$VERSION"
+
+test:
+  stage: test
+  script:
+  - mvn -B -Drevision=${REVISION} -Dsonar.host.url=http://sonar.patrikdufresne.com -Dsonar.login=$SONAR_TOKEN clean verify sonar:sonar
+
+nexus_deploy:
+  stage: deploy
+  script:
+  - mvn -B -s ./settings.xml -Drevision=${REVISION} clean install deploy
+
+github_push:
+  stage: publish
+  script:
+  - git push --force https://${GITHUB_USR}:${GITHUB_PWD}@github.com/ikus060/jface.git refs/remotes/origin/${CI_COMMIT_REF_NAME}:refs/heads/${CI_COMMIT_REF_NAME}
+  - git push https://${GITHUB_USR}:${GITHUB_PWD}@github.com/ikus060/jface.git --tags
